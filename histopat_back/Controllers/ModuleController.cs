@@ -1,7 +1,9 @@
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using histopat_back.Data;
 using histopat_back.Models;
+using histopat_back.Services.Interfaces;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Identity.Client.Extensions.Msal;
 
 namespace histopat_back.Controllers;
 
@@ -10,10 +12,13 @@ namespace histopat_back.Controllers;
 public class ModuleController : ControllerBase
 {
     private readonly HistopatDbContext _context;
+    private readonly IImageStorageService _storage;
 
-    public ModuleController(HistopatDbContext context)
+
+    public ModuleController(HistopatDbContext context, IImageStorageService storage)
     {
         _context = context;
+        _storage = storage;
     }
 
     // GET: api/Module
@@ -84,5 +89,26 @@ public class ModuleController : ControllerBase
         await _context.SaveChangesAsync();
 
         return NoContent();
+    }
+
+    [HttpPost("upload")]
+    public async Task<IActionResult> Upload(IFormFile file)
+    {
+        using var stream = file.OpenReadStream();
+        var result = await _storage.SaveImageAsync(stream, file.FileName);
+        return Ok(new { Path = result });
+    }
+
+    [HttpGet("download/{fileName}")]    public async Task<IActionResult> Download(string fileName)
+    {
+        try
+        {
+            var (stream, contentType) = await _storage.DownloadAsync(fileName);
+            return File(stream, contentType, fileName);
+        }
+        catch (FileNotFoundException)
+        {
+            return NotFound("Imagem não encontrada.");
+        }
     }
 }

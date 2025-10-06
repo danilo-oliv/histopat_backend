@@ -6,7 +6,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace histopat_back.Models;
 
 [Table("Module")]
-public class Module
+public class Module : BaseEntity
 {
     [Key]
     public long IdModule { get; set; }
@@ -23,4 +23,5 @@ public class Module
     // Navigation
     public ICollection<Topic> Topics { get; set; } = new List<Topic>();
     public ICollection<ModuleHistory> ModuleHistories { get; set; } = new List<ModuleHistory>();
+    public ICollection<ModuleImage> ModuleImages { get; set; } = new List<ModuleImage>();
 }
