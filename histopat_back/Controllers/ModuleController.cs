@@ -4,6 +4,10 @@ using histopat_back.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Identity.Client.Extensions.Msal;
+using CloudinaryDotNet;
+using CloudinaryDotNet.Actions;
+using histopat_back.Services.Local;
+using histopat_back.Services.Remote;
 
 namespace histopat_back.Controllers;
 
@@ -13,12 +17,14 @@ public class ModuleController : ControllerBase
 {
     private readonly HistopatDbContext _context;
     private readonly IImageStorageService _storage;
+    private readonly IRemoteImageStorageService _remoteStorage;
 
 
-    public ModuleController(HistopatDbContext context, IImageStorageService storage)
+    public ModuleController(HistopatDbContext context, IImageStorageService storage, IRemoteImageStorageService remoteStorage)
     {
         _context = context;
         _storage = storage;
+        _remoteStorage = remoteStorage;
     }
 
     // GET: api/Module
@@ -96,6 +102,16 @@ public class ModuleController : ControllerBase
     {
         using var stream = file.OpenReadStream();
         var result = await _storage.SaveImageAsync(stream, file.FileName);
+        return Ok(new { Path = result });
+    }
+
+    [HttpPost("upload/remote/{fileName}")]
+    public async Task<IActionResult> UploadRemote(IFormFile file, string fileName)
+    {
+        await using var stream = file.OpenReadStream();
+
+        var result = await _remoteStorage.SaveImageAsync(stream, fileName);
+
         return Ok(new { Path = result });
     }
 
