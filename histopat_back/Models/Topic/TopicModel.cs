@@ -17,6 +17,5 @@ public class TopicModel : BaseEntity<TopicHistory>
     [ForeignKey(nameof(IdModule))]
     public ModuleModel Module { get; set; } = null!;
 
-    public ICollection<TopicHistory> TopicHistories { get; set; } = new List<TopicHistory>();
     public ICollection<SubtopicModel> SubTopics { get; set; } = new List<SubtopicModel>();
 }

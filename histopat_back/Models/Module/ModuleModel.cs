@@ -11,6 +11,5 @@ namespace histopat_back.Models.Module;
 public class ModuleModel : BaseEntity<ModuleHistory>
 {
     public ICollection<TopicModel> Topics { get; set; } = new List<TopicModel>();
-    public ICollection<ModuleHistory> ModuleHistories { get; set; } = new List<ModuleHistory>();
     public ICollection<ModuleImage> ModuleImages { get; set; } = new List<ModuleImage>();
 }

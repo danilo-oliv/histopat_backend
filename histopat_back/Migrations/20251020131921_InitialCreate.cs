@@ -12,26 +12,26 @@ namespace histopat_back.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "Module",
+                name: "Modules",
                 columns: table => new
                 {
-                    IdModule = table.Column<long>(type: "BIGINT", nullable: false)
+                    Id = table.Column<int>(type: "INT", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Title = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
                     Active = table.Column<bool>(type: "bit", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "DATETIME", nullable: false),
                     LastModified = table.Column<DateTime>(type: "DATETIME", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Module", x => x.IdModule);
+                    table.PrimaryKey("PK_Modules", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
                 name: "Roles",
                 columns: table => new
                 {
-                    IdRoles = table.Column<byte>(type: "TINYINT", nullable: false),
+                    IdRoles = table.Column<byte>(type: "tinyint", nullable: false),
                     Active = table.Column<bool>(type: "bit", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false)
                 },
@@ -44,7 +44,7 @@ namespace histopat_back.Migrations
                 name: "User",
                 columns: table => new
                 {
-                    IdUser = table.Column<long>(type: "BIGINT", nullable: false)
+                    IdUser = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: false),
                     Active = table.Column<bool>(type: "bit", nullable: false)
@@ -55,51 +55,80 @@ namespace histopat_back.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Topic",
+                name: "ModuleImage",
                 columns: table => new
                 {
-                    IdTopico = table.Column<long>(type: "BIGINT", nullable: false)
+                    Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    IdModule = table.Column<long>(type: "BIGINT", nullable: false),
-                    Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Active = table.Column<bool>(type: "bit", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "DATETIME", nullable: false),
-                    LastModified = table.Column<DateTime>(type: "DATETIME", nullable: true)
+                    ModuleModelId = table.Column<int>(type: "INT", nullable: true),
+                    FileName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    FilePath = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    UploadedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false),
+                    Size = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Topic", x => x.IdTopico);
+                    table.PrimaryKey("PK_ModuleImage", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Topic_Module_IdModule",
-                        column: x => x.IdModule,
-                        principalTable: "Module",
-                        principalColumn: "IdModule",
-                        onDelete: ReferentialAction.Cascade);
+                        name: "FK_ModuleImage_Modules_ModuleModelId",
+                        column: x => x.ModuleModelId,
+                        principalTable: "Modules",
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
-                name: "ModuleHistory",
+                name: "Topic",
                 columns: table => new
                 {
-                    IdModuleHistory = table.Column<long>(type: "BIGINT", nullable: false)
+                    Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    ModificationDate = table.Column<DateTime>(type: "DATETIME", nullable: false),
-                    SnapshotData = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Operation = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    IdUser = table.Column<long>(type: "BIGINT", nullable: false),
-                    IdModule = table.Column<long>(type: "BIGINT", nullable: false)
+                    IdModule = table.Column<int>(type: "INT", nullable: false),
+                    Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Active = table.Column<bool>(type: "bit", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    LastModified = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ModuleHistory", x => x.IdModuleHistory);
+                    table.PrimaryKey("PK_Topic", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_ModuleHistory_Module_IdModule",
+                        name: "FK_Topic_Modules_IdModule",
                         column: x => x.IdModule,
-                        principalTable: "Module",
-                        principalColumn: "IdModule",
+                        principalTable: "Modules",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ModuleHistories",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INT", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    IdModule = table.Column<int>(type: "INT", nullable: false),
+                    ModuleId = table.Column<int>(type: "INT", nullable: false),
+                    ChangedAt = table.Column<DateTime>(type: "DATETIME", nullable: false),
+                    IdUser = table.Column<int>(type: "int", nullable: false),
+                    Action = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ModuleHistories", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ModuleHistories_Modules_IdModule",
+                        column: x => x.IdModule,
+                        principalTable: "Modules",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_ModuleHistory_User_IdUser",
+                        name: "FK_ModuleHistories_Modules_ModuleId",
+                        column: x => x.ModuleId,
+                        principalTable: "Modules",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_ModuleHistories_User_IdUser",
                         column: x => x.IdUser,
                         principalTable: "User",
                         principalColumn: "IdUser",
@@ -110,46 +139,49 @@ namespace histopat_back.Migrations
                 name: "UserRole",
                 columns: table => new
                 {
-                    IdUser = table.Column<long>(type: "BIGINT", nullable: false),
-                    IdRoles = table.Column<byte>(type: "TINYINT", nullable: false),
+                    IdUserRole = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    IdUser = table.Column<int>(type: "int", nullable: false),
+                    IdRoles = table.Column<byte>(type: "tinyint", nullable: false),
                     Active = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_UserRole", x => new { x.IdUser, x.IdRoles });
+                    table.PrimaryKey("PK_UserRole", x => x.IdUserRole);
                     table.ForeignKey(
                         name: "FK_UserRole_Roles_IdRoles",
                         column: x => x.IdRoles,
                         principalTable: "Roles",
                         principalColumn: "IdRoles",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_UserRole_User_IdUser",
                         column: x => x.IdUser,
                         principalTable: "User",
                         principalColumn: "IdUser",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
                 name: "SubTopic",
                 columns: table => new
                 {
-                    IdSubTopico = table.Column<long>(type: "BIGINT", nullable: false)
+                    Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    IdTopic = table.Column<long>(type: "BIGINT", nullable: false),
+                    IdTopic = table.Column<int>(type: "int", nullable: false),
+                    Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Active = table.Column<bool>(type: "bit", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "DATETIME", nullable: false),
-                    LastModified = table.Column<DateTime>(type: "DATETIME", nullable: true)
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    LastModified = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_SubTopic", x => x.IdSubTopico);
+                    table.PrimaryKey("PK_SubTopic", x => x.Id);
                     table.ForeignKey(
                         name: "FK_SubTopic_Topic_IdTopic",
                         column: x => x.IdTopic,
                         principalTable: "Topic",
-                        principalColumn: "IdTopico",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -157,53 +189,52 @@ namespace histopat_back.Migrations
                 name: "TopicHistory",
                 columns: table => new
                 {
-                    IdTopicHistory = table.Column<long>(type: "BIGINT", nullable: false)
+                    Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    ModificationDate = table.Column<DateTime>(type: "DATETIME", nullable: false),
-                    SnapshotData = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Operation = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    IdUser = table.Column<long>(type: "BIGINT", nullable: false),
-                    IdTopico = table.Column<long>(type: "BIGINT", nullable: false)
+                    IdTopic = table.Column<int>(type: "int", nullable: false),
+                    ChangedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    IdUser = table.Column<int>(type: "int", nullable: false),
+                    Action = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_TopicHistory", x => x.IdTopicHistory);
+                    table.PrimaryKey("PK_TopicHistory", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_TopicHistory_Topic_IdTopico",
-                        column: x => x.IdTopico,
+                        name: "FK_TopicHistory_Topic_IdTopic",
+                        column: x => x.IdTopic,
                         principalTable: "Topic",
-                        principalColumn: "IdTopico",
-                        onDelete: ReferentialAction.Restrict);
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_TopicHistory_User_IdUser",
                         column: x => x.IdUser,
                         principalTable: "User",
                         principalColumn: "IdUser",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
                 name: "Slide",
                 columns: table => new
                 {
-                    IdSlide = table.Column<long>(type: "BIGINT", nullable: false)
+                    Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    IdSubTopico = table.Column<long>(type: "BIGINT", nullable: false),
-                    Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    IdSubTopico = table.Column<int>(type: "int", nullable: false),
                     Image = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Active = table.Column<bool>(type: "bit", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "DATETIME", nullable: false),
-                    LastModified = table.Column<DateTime>(type: "DATETIME", nullable: true)
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    LastModified = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Slide", x => x.IdSlide);
+                    table.PrimaryKey("PK_Slide", x => x.Id);
                     table.ForeignKey(
                         name: "FK_Slide_SubTopic_IdSubTopico",
                         column: x => x.IdSubTopico,
                         principalTable: "SubTopic",
-                        principalColumn: "IdSubTopico",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -211,69 +242,77 @@ namespace histopat_back.Migrations
                 name: "SubTopicHistory",
                 columns: table => new
                 {
-                    IdSubTopicHistory = table.Column<long>(type: "BIGINT", nullable: false)
+                    Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    ModificationDate = table.Column<DateTime>(type: "DATETIME", nullable: false),
-                    SnapshotData = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Operation = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    IdSubTopico = table.Column<long>(type: "BIGINT", nullable: false),
-                    IdUser = table.Column<long>(type: "BIGINT", nullable: false)
+                    IdSubTopic = table.Column<int>(type: "int", nullable: false),
+                    ChangedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    IdUser = table.Column<int>(type: "int", nullable: false),
+                    Action = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_SubTopicHistory", x => x.IdSubTopicHistory);
+                    table.PrimaryKey("PK_SubTopicHistory", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_SubTopicHistory_SubTopic_IdSubTopico",
-                        column: x => x.IdSubTopico,
+                        name: "FK_SubTopicHistory_SubTopic_IdSubTopic",
+                        column: x => x.IdSubTopic,
                         principalTable: "SubTopic",
-                        principalColumn: "IdSubTopico",
-                        onDelete: ReferentialAction.Restrict);
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_SubTopicHistory_User_IdUser",
                         column: x => x.IdUser,
                         principalTable: "User",
                         principalColumn: "IdUser",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
                 name: "SlideHistory",
                 columns: table => new
                 {
-                    IdSlideSubTopicHistory = table.Column<long>(type: "BIGINT", nullable: false)
+                    Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    ModificationDate = table.Column<DateTime>(type: "DATETIME", nullable: false),
-                    SnapshotData = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Operation = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    IdSlide = table.Column<long>(type: "BIGINT", nullable: false),
-                    IdUser = table.Column<long>(type: "BIGINT", nullable: false)
+                    IdSlide = table.Column<int>(type: "int", nullable: false),
+                    ChangedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    IdUser = table.Column<int>(type: "int", nullable: false),
+                    Action = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_SlideHistory", x => x.IdSlideSubTopicHistory);
+                    table.PrimaryKey("PK_SlideHistory", x => x.Id);
                     table.ForeignKey(
                         name: "FK_SlideHistory_Slide_IdSlide",
                         column: x => x.IdSlide,
                         principalTable: "Slide",
-                        principalColumn: "IdSlide",
-                        onDelete: ReferentialAction.Restrict);
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_SlideHistory_User_IdUser",
                         column: x => x.IdUser,
                         principalTable: "User",
                         principalColumn: "IdUser",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_ModuleHistory_IdModule",
-                table: "ModuleHistory",
+                name: "IX_ModuleHistories_IdModule",
+                table: "ModuleHistories",
                 column: "IdModule");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ModuleHistory_IdUser",
-                table: "ModuleHistory",
+                name: "IX_ModuleHistories_IdUser",
+                table: "ModuleHistories",
                 column: "IdUser");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ModuleHistories_ModuleId",
+                table: "ModuleHistories",
+                column: "ModuleId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ModuleImage_ModuleModelId",
+                table: "ModuleImage",
+                column: "ModuleModelId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Slide_IdSubTopico",
@@ -296,9 +335,9 @@ namespace histopat_back.Migrations
                 column: "IdTopic");
 
             migrationBuilder.CreateIndex(
-                name: "IX_SubTopicHistory_IdSubTopico",
+                name: "IX_SubTopicHistory_IdSubTopic",
                 table: "SubTopicHistory",
-                column: "IdSubTopico");
+                column: "IdSubTopic");
 
             migrationBuilder.CreateIndex(
                 name: "IX_SubTopicHistory_IdUser",
@@ -311,9 +350,9 @@ namespace histopat_back.Migrations
                 column: "IdModule");
 
             migrationBuilder.CreateIndex(
-                name: "IX_TopicHistory_IdTopico",
+                name: "IX_TopicHistory_IdTopic",
                 table: "TopicHistory",
-                column: "IdTopico");
+                column: "IdTopic");
 
             migrationBuilder.CreateIndex(
                 name: "IX_TopicHistory_IdUser",
@@ -324,13 +363,21 @@ namespace histopat_back.Migrations
                 name: "IX_UserRole_IdRoles",
                 table: "UserRole",
                 column: "IdRoles");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserRole_IdUser",
+                table: "UserRole",
+                column: "IdUser");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "ModuleHistory");
+                name: "ModuleHistories");
+
+            migrationBuilder.DropTable(
+                name: "ModuleImage");
 
             migrationBuilder.DropTable(
                 name: "SlideHistory");
@@ -360,7 +407,7 @@ namespace histopat_back.Migrations
                 name: "Topic");
 
             migrationBuilder.DropTable(
-                name: "Module");
+                name: "Modules");
         }
     }
 }

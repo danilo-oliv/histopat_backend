@@ -63,7 +63,7 @@ public class HistopatDbContext : DbContext
                   .OnDelete(DeleteBehavior.Restrict);
 
             // Relacionamento 1:N → Module -> ModuleHistories
-            entity.HasMany(e => e.ModuleHistories)
+            entity.HasMany(e => e.History)
                   .WithOne(h => h.Module)
                   .HasForeignKey(h => h.IdModule)
                   .OnDelete(DeleteBehavior.Restrict);
@@ -97,7 +97,7 @@ public class HistopatDbContext : DbContext
 
             // Relacionamento → Module
             entity.HasOne<ModuleModel>()
-                  .WithMany(m => m.ModuleHistories)
+                  .WithMany(m => m.History)
                   .HasForeignKey("IdModule")
                   .OnDelete(DeleteBehavior.Restrict);
         });
