@@ -1,7 +1,9 @@
+using histopat_back.Data;
+using histopat_back.Models.Module;
+using histopat_back.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using histopat_back.Data;
-using histopat_back.Models;
+using Microsoft.Identity.Client.Extensions.Msal;
 
 namespace histopat_back.Controllers;
 
@@ -10,15 +12,18 @@ namespace histopat_back.Controllers;
 public class ModuleController : ControllerBase
 {
     private readonly HistopatDbContext _context;
+    private readonly IImageStorageService _storage;
 
-    public ModuleController(HistopatDbContext context)
+
+    public ModuleController(HistopatDbContext context, IImageStorageService storage)
     {
         _context = context;
+        _storage = storage;
     }
 
     // GET: api/Module
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<Module>>> GetModules()
+    public async Task<ActionResult<IEnumerable<ModuleModel>>> GetModules()
     {
         return await _context.Modules
             .Include(m => m.Topics) // inclui tópicos relacionados
@@ -27,11 +32,11 @@ public class ModuleController : ControllerBase
 
     // GET: api/Module/5
     [HttpGet("{id}")]
-    public async Task<ActionResult<Module>> GetModule(long id)
+    public async Task<ActionResult<ModuleModel>> GetModule(int id)
     {
         var module = await _context.Modules
             .Include(m => m.Topics)
-            .FirstOrDefaultAsync(m => m.IdModule == id);
+            .FirstOrDefaultAsync(m => m.Id == id);
 
         if (module == null)
             return NotFound();
@@ -41,21 +46,21 @@ public class ModuleController : ControllerBase
 
     // POST: api/Module
     [HttpPost]
-    public async Task<ActionResult<Module>> CreateModule(Module module)
+    public async Task<ActionResult<ModuleModel>> CreateModule(ModuleModel module)
     {
         module.CreatedAt = DateTime.UtcNow;
 
         _context.Modules.Add(module);
         await _context.SaveChangesAsync();
 
-        return CreatedAtAction(nameof(GetModule), new { id = module.IdModule }, module);
+        return CreatedAtAction(nameof(GetModule), new { id = module.Id }, module);
     }
 
     // PUT: api/Module/5
     [HttpPut("{id}")]
-    public async Task<IActionResult> UpdateModule(long id, Module updatedModule)
+    public async Task<IActionResult> UpdateModule(int id, ModuleModel updatedModule)
     {
-        if (id != updatedModule.IdModule)
+        if (id != updatedModule.Id)
             return BadRequest();
 
         var module = await _context.Modules.FindAsync(id);
@@ -74,7 +79,7 @@ public class ModuleController : ControllerBase
 
     // DELETE: api/Module/5
     [HttpDelete("{id}")]
-    public async Task<IActionResult> DeleteModule(long id)
+    public async Task<IActionResult> DeleteModule(int id)
     {
         var module = await _context.Modules.FindAsync(id);
         if (module == null)
@@ -84,5 +89,26 @@ public class ModuleController : ControllerBase
         await _context.SaveChangesAsync();
 
         return NoContent();
+    }
+
+    [HttpPost("upload")]
+    public async Task<IActionResult> Upload(IFormFile file)
+    {
+        using var stream = file.OpenReadStream();
+        var result = await _storage.SaveImageAsync(stream, file.FileName);
+        return Ok(new { Path = result });
+    }
+
+    [HttpGet("download/{fileName}")]    public async Task<IActionResult> Download(string fileName)
+    {
+        try
+        {
+            var (stream, contentType) = await _storage.DownloadAsync(fileName);
+            return File(stream, contentType, fileName);
+        }
+        catch (FileNotFoundException)
+        {
+            return NotFound("Imagem não encontrada.");
+        }
     }
 }

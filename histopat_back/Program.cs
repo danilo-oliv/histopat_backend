@@ -1,4 +1,6 @@
 using histopat_back.Data;
+using histopat_back.Services.Interfaces;
+using histopat_back.Services.Local;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -11,6 +13,8 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+builder.Services.AddScoped<IImageStorageService, LocalStorageService>();
+
 // Registra o DbContext no DI
 builder.Services.AddDbContext<HistopatDbContext>(options =>
     options.UseSqlServer(connectionString));
