@@ -27,6 +27,7 @@ public class ModuleController : ControllerBase
     {
         return await _context.Modules
             .Include(m => m.Topics) // inclui tópicos relacionados
+            .Include(m => m.ModuleImages)
             .ToListAsync();
     }
 
@@ -36,6 +37,7 @@ public class ModuleController : ControllerBase
     {
         var module = await _context.Modules
             .Include(m => m.Topics)
+            .Include(m => m.ModuleImages)
             .FirstOrDefaultAsync(m => m.Id == id);
 
         if (module == null)
