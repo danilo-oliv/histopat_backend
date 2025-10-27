@@ -16,6 +16,9 @@ public class SubtopicModel : BaseEntity<SubTopicHistory>
 
     [ForeignKey(nameof(IdTopic))]
     public TopicModel Topic { get; set; } = null!;
+    
+    [Required]
+    public string Description { get; set; } = string.Empty;
 
     public ICollection<SlideModel> Slides { get; set; } = new List<SlideModel>();
 }

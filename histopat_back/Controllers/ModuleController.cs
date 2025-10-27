@@ -37,6 +37,7 @@ public class ModuleController : ControllerBase
     {
         var module = await _context.Modules
             .Include(m => m.Topics)
+            .ThenInclude(t => t.SubTopics)
             .Include(m => m.ModuleImages)
             .FirstOrDefaultAsync(m => m.Id == id);
 

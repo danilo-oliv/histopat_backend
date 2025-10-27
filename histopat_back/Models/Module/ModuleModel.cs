@@ -12,4 +12,7 @@ public class ModuleModel : BaseEntity<ModuleHistory>
 {
     public ICollection<TopicModel> Topics { get; set; } = new List<TopicModel>();
     public ICollection<ModuleImage> ModuleImages { get; set; } = new List<ModuleImage>();
+    
+    [Required]
+    public string Description { get; set; } = string.Empty;
 }
