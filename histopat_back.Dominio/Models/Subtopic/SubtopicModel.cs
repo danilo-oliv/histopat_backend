@@ -1,12 +1,9 @@
-using histopat_back.Models.Base;
-using histopat_back.Models.Slide;
-using histopat_back.Models.Topic;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+using histopat_back.Dominio.Models.Base;
+using histopat_back.Dominio.Models.Slide;
+using histopat_back.Dominio.Models.Topic;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace histopat_back.Models.Subtopic;
+namespace histopat_back.Dominio.Models.Subtopic;
 
 [Table("SubTopic")]
 public class SubtopicModel : BaseEntity<SubTopicHistory>
@@ -14,11 +11,12 @@ public class SubtopicModel : BaseEntity<SubTopicHistory>
    
     public int IdTopic { get; set; }
 
+    public string ImageUrl { get; set; } = null!;
+
     [ForeignKey(nameof(IdTopic))]
     public TopicModel Topic { get; set; } = null!;
     
-    [Required]
-    public string Description { get; set; } = string.Empty;
+    public string? Description { get; set; }
 
     public ICollection<SlideModel> Slides { get; set; } = new List<SlideModel>();
 }

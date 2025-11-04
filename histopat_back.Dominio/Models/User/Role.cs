@@ -1,8 +1,8 @@
-using System.Collections.Generic;
+
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace histopat_back.Models.User;
+namespace histopat_back.Dominio.Models.User;
 
 [Table("Roles")]
 public class Role

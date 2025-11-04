@@ -1,12 +1,10 @@
-using histopat_back.Models.Base;
-using histopat_back.Models.Module;
-using histopat_back.Models.Subtopic;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+
+using histopat_back.Dominio.Models.Base;
+using histopat_back.Dominio.Models.Module;
+using histopat_back.Dominio.Models.Subtopic;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace histopat_back.Models.Topic;
+namespace histopat_back.Dominio.Models.Topic;
 
 [Table("Topic")]
 public class TopicModel : BaseEntity<TopicHistory>

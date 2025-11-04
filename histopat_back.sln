@@ -5,6 +5,10 @@ VisualStudioVersion = 17.14.36408.4 d17.14
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "histopat_back", "histopat_back\histopat_back.csproj", "{77E86574-B066-46AA-87B8-A43AF6A8B40E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "histopat_back.Dominio", "histopat_back.Dominio\histopat_back.Dominio.csproj", "{2D11C736-E1AA-4514-98CF-922B6EAADFA1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "histopat_back.Infra", "histopat_back.Infra\histopat_back.Infra.csproj", "{D797405A-DDBC-4CBD-8A86-D0CD141F9EEB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +19,14 @@ Global
 		{77E86574-B066-46AA-87B8-A43AF6A8B40E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{77E86574-B066-46AA-87B8-A43AF6A8B40E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{77E86574-B066-46AA-87B8-A43AF6A8B40E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2D11C736-E1AA-4514-98CF-922B6EAADFA1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2D11C736-E1AA-4514-98CF-922B6EAADFA1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2D11C736-E1AA-4514-98CF-922B6EAADFA1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2D11C736-E1AA-4514-98CF-922B6EAADFA1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D797405A-DDBC-4CBD-8A86-D0CD141F9EEB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D797405A-DDBC-4CBD-8A86-D0CD141F9EEB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D797405A-DDBC-4CBD-8A86-D0CD141F9EEB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D797405A-DDBC-4CBD-8A86-D0CD141F9EEB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

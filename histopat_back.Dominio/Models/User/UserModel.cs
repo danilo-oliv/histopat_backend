@@ -1,12 +1,11 @@
-using histopat_back.Models.Module;
-using histopat_back.Models.Slide;
-using histopat_back.Models.Subtopic;
-using histopat_back.Models.Topic;
-using System.Collections.Generic;
+using histopat_back.Dominio.Models.Module;
+using histopat_back.Dominio.Models.Slide;
+using histopat_back.Dominio.Models.Subtopic;
+using histopat_back.Dominio.Models.Topic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace histopat_back.Models.User;
+namespace histopat_back.Dominio.Models.User;
 
 [Table("User")]
 public class UserModel

@@ -1,7 +1,6 @@
-using histopat_back.Data;
-using histopat_back.Models.Module;
-using histopat_back.Models.Topic;
-using histopat_back.Models.Subtopic;
+
+using histopat_back.Context;
+using histopat_back.Dominio.Models.Topic;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 

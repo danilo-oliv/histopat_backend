@@ -1,11 +1,9 @@
-using histopat_back.Models.Base;
-using histopat_back.Models.Module;
-using histopat_back.Models.User;
+using histopat_back.Dominio.Models.Base;
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace histopat_back.Models.Topic;
+namespace histopat_back.Dominio.Models.Topic;
 
 [Table("TopicHistory")]
 public class TopicHistory : BaseHistory

@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace histopat_back.Models.User;
+namespace histopat_back.Dominio.Models.User;
 
 [Table("UserRole")]
 public class UserRole

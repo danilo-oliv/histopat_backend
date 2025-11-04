@@ -1,4 +1,4 @@
-﻿namespace histopat_back.Models.Base
+﻿namespace histopat_back.Dominio.Models.Base
 {
     public class Image
     {

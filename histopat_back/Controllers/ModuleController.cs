@@ -1,10 +1,10 @@
-using histopat_back.Data;
-using histopat_back.Models.Module;
+
+
+using histopat_back.Context;
+using histopat_back.Dominio.Models.Module;
 using histopat_back.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Identity.Client.Extensions.Msal;
-
 namespace histopat_back.Controllers;
 
 [ApiController]
@@ -27,7 +27,6 @@ public class ModuleController : ControllerBase
     {
         return await _context.Modules
             .Include(m => m.Topics) // inclui tópicos relacionados
-            .Include(m => m.ModuleImages)
             .ToListAsync();
     }
 
@@ -38,7 +37,6 @@ public class ModuleController : ControllerBase
         var module = await _context.Modules
             .Include(m => m.Topics)
             .ThenInclude(t => t.SubTopics)
-            .Include(m => m.ModuleImages)
             .FirstOrDefaultAsync(m => m.Id == id);
 
         if (module == null)

@@ -1,11 +1,13 @@
-using Microsoft.EntityFrameworkCore;
-using histopat_back.Models.Module;
-using histopat_back.Models.Slide;
-using histopat_back.Models.Subtopic;
-using histopat_back.Models.Topic;
-using histopat_back.Models.User;
 
-namespace histopat_back.Data;
+
+using histopat_back.Dominio.Models.Module;
+using histopat_back.Dominio.Models.Slide;
+using histopat_back.Dominio.Models.Subtopic;
+using histopat_back.Dominio.Models.Topic;
+using histopat_back.Dominio.Models.User;
+using Microsoft.EntityFrameworkCore;
+
+namespace histopat_back.Context;
 
 public class HistopatDbContext : DbContext
 {
