@@ -1,7 +1,5 @@
-using histopat_back.Data;
-using histopat_back.Models.Module;
-using histopat_back.Models.Topic;
-using histopat_back.Models.Subtopic;
+using histopat_back.Context;
+using histopat_back.Dominio.Models.Subtopic;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -20,14 +18,14 @@ public class SubTopicController : ControllerBase
 
     // GET: api/SubTopic
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<SubtopicModel>>> GetSubTopics()
+    public async Task<ActionResult<IEnumerable<Subtopic>>> GetSubTopics()
     {
         return await _context.SubTopics.ToListAsync();
     }
 
     // GET: api/SubTopic/5
     [HttpGet("{id}")]
-    public async Task<ActionResult<SubtopicModel>> GetSubTopic(int id)
+    public async Task<ActionResult<Subtopic>> GetSubTopic(int id)
     {
         var subTopic = await _context.SubTopics
             .Include(s => s.Slides)
@@ -41,7 +39,7 @@ public class SubTopicController : ControllerBase
 
     // POST: api/SubTopic
     [HttpPost]
-    public async Task<ActionResult<SubtopicModel>> CreateSubTopic(SubtopicModel subTopic)
+    public async Task<ActionResult<Subtopic>> CreateSubTopic(Subtopic subTopic)
     {
         subTopic.CreatedAt = DateTime.UtcNow;
 
@@ -53,7 +51,7 @@ public class SubTopicController : ControllerBase
 
     // PUT: api/SubTopic/5
     [HttpPut("{id}")]
-    public async Task<IActionResult> UpdateSubTopic(int id, SubtopicModel updatedSubTopic)
+    public async Task<IActionResult> UpdateSubTopic(int id, Subtopic updatedSubTopic)
     {
         if (id != updatedSubTopic.Id)
             return BadRequest();
@@ -87,7 +85,7 @@ public class SubTopicController : ControllerBase
 
     // GET: api/SubTopic/topic/3 (retorna todos os sub-tópicos de um tópico)
     [HttpGet("topic/{topicId}")]
-    public async Task<ActionResult<IEnumerable<SubtopicModel>>> GetSubTopicsByTopic(int topicId)
+    public async Task<ActionResult<IEnumerable<Subtopic>>> GetSubTopicsByTopic(int topicId)
     {
         var subTopics = await _context.SubTopics
             .Where(s => s.IdTopic == topicId)

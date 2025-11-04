@@ -1,10 +1,10 @@
-using histopat_back.Data;
-using histopat_back.Models.Module;
+
+
+using histopat_back.Context;
+using histopat_back.Dominio.Models.Module;
 using histopat_back.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Identity.Client.Extensions.Msal;
-
 namespace histopat_back.Controllers;
 
 [ApiController]
@@ -23,22 +23,20 @@ public class ModuleController : ControllerBase
 
     // GET: api/Module
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<ModuleModel>>> GetModules()
+    public async Task<ActionResult<IEnumerable<Module>>> GetModules()
     {
         return await _context.Modules
             .Include(m => m.Topics) // inclui tópicos relacionados
-            .Include(m => m.ModuleImages)
             .ToListAsync();
     }
 
     // GET: api/Module/5
     [HttpGet("{id}")]
-    public async Task<ActionResult<ModuleModel>> GetModule(int id)
+    public async Task<ActionResult<Module>> GetModule(int id)
     {
         var module = await _context.Modules
             .Include(m => m.Topics)
             .ThenInclude(t => t.SubTopics)
-            .Include(m => m.ModuleImages)
             .FirstOrDefaultAsync(m => m.Id == id);
 
         if (module == null)
@@ -49,7 +47,7 @@ public class ModuleController : ControllerBase
 
     // POST: api/Module
     [HttpPost]
-    public async Task<ActionResult<ModuleModel>> CreateModule(ModuleModel module)
+    public async Task<ActionResult<Module>> CreateModule(Module module)
     {
         module.CreatedAt = DateTime.UtcNow;
 
@@ -61,7 +59,7 @@ public class ModuleController : ControllerBase
 
     // PUT: api/Module/5
     [HttpPut("{id}")]
-    public async Task<IActionResult> UpdateModule(int id, ModuleModel updatedModule)
+    public async Task<IActionResult> UpdateModule(int id, Module updatedModule)
     {
         if (id != updatedModule.Id)
             return BadRequest();
