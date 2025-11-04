@@ -7,10 +7,8 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace histopat_back.Dominio.Models.Subtopic;
 
-[Table("SubTopicHistory")]
 public class SubTopicHistory : BaseHistory
 {    public int IdSubTopic { get; set; }
 
-    [ForeignKey(nameof(IdSubTopic))]
-    public SubtopicModel Subtopic { get; set; } = null!;
+    public Subtopic Subtopic { get; set; } = null!;
 }

@@ -8,10 +8,8 @@ namespace histopat_back.Dominio.Models.Base
      */
     public abstract class BaseEntity<THistory> where THistory : BaseHistory
     {
-        [Key]
         public int Id { get; set; }
 
-        [Required]
         public string Title { get; set; } = null!;
 
         public bool Active { get; set; }

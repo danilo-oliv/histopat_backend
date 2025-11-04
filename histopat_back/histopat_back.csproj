@@ -11,12 +11,14 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Migrations\" />
+    <ProjectReference Include="..\histopat_back.Infra\histopat_back.Infra.csproj" />
+    <ProjectReference Include="..\histopat_back.Dominio\histopat_back.Dominio.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\histopat_back.Infra\histopat_back.Infra.csproj" />
-    <ProjectReference Include="..\histopat_back.Dominio\histopat_back.Dominio.csproj" />
+    <Folder Include="ViewModel\UserRole\" />
+    <Folder Include="ViewModel\Role\" />
+    <Folder Include="ViewModel\User\" />
   </ItemGroup>
 
 </Project>

@@ -7,13 +7,10 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace histopat_back.Dominio.Models.User;
 
-[Table("User")]
-public class UserModel
+public class User
 {
-    [Key]
     public int IdUser { get; set; }
 
-    [Required, StringLength(150)]
     public string Name { get; set; } = string.Empty;
 
     public bool Active { get; set; }
