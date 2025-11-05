@@ -1,5 +1,6 @@
 
 using histopat_back.Context;
+using histopat_back.Mapster;
 using histopat_back.Services.Interfaces;
 using histopat_back.Services.Local;
 using Microsoft.EntityFrameworkCore;
@@ -24,6 +25,7 @@ builder.Services.AddControllers().AddJsonOptions(x =>
 // Add services to the container.
 
 builder.Services.AddControllers();
+builder.Services.AddMapster();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
