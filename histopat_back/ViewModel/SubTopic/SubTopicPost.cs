@@ -14,5 +14,8 @@ namespace histopat_back.ViewModel.SubTopic
 
         [Required(ErrorMessage = "Selecione uma imagem")]
         public string ImageUrl { get; set; } = null!;
+
+        [Required(ErrorMessage = "Informe o ID do tópico")]
+        public int IdTopic { get; set; }
     }
 }

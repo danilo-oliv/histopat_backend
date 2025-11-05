@@ -5,9 +5,9 @@ namespace histopat_back.Services.Interfaces
 {
     public interface ISubTopicService
     {
-        public Task<SubTopicGet> FindAllSubTopicsById(int subTopicId);
-        public void SaveSubTopic(SubTopicPost subTopicPost);
-        public void EditSubTopic(SubTopicPost subTopicEdit);
-        public void DeleteSubTopic(int subTopicId);
+        public Task<ICollection<SubTopicGet>> FindAllSubTopicsByTopicId(int topicId);
+        public Task SaveSubTopic(SubTopicPost subTopicPost);
+        public Task EditSubTopic(SubTopicEdit subTopicEdit, int subTopicId);
+        public Task DeleteSubTopic(int subTopicId);
     }
 }
