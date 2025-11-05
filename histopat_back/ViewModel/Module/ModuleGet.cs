@@ -1,7 +1,4 @@
-﻿using histopat_back.Dominio.Models.Topic;
-using histopat_back.ViewModel.Topic;
-
-namespace histopat_back.ViewModel.Module
+﻿namespace histopat_back.ViewModel.Module
 {
     public class ModuleGet
     {
@@ -13,7 +10,7 @@ namespace histopat_back.ViewModel.Module
 
         public string? Description { get; set; } = string.Empty;
 
-        public ICollection<TopicGet> Topics { get; set; } = new List<TopicGet>();
+        public ICollection<PartialTopic> Topics { get; set; } = new List<PartialTopic>();
 
         public bool Active { get; set; }
 
