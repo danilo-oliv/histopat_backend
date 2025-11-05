@@ -24,8 +24,7 @@ namespace histopat_back.Infra.Configurations
                 .IsRequired();
 
             builder.Property(m => m.Active)
-                .IsRequired()
-                .HasDefaultValue(true);
+                .IsRequired();
 
             builder.Property(m => m.CreatedAt)
                 .IsRequired()

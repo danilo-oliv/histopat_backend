@@ -22,8 +22,7 @@ namespace histopat_back.Infra.Configurations
                 .HasMaxLength(200);
 
             builder.Property(m => m.Active)
-                .IsRequired()
-                .HasDefaultValue(true);
+                .IsRequired();
 
             builder.Property(m => m.CreatedAt)
                 .IsRequired()
