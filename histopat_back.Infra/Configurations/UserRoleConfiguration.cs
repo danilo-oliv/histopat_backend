@@ -18,7 +18,7 @@ namespace histopat_back.Infra.Configurations
             builder.HasKey(ur => ur.IdUserRole);
 
             builder.Property(ur => ur.Active)
-                .HasDefaultValue(true);
+                .IsRequired();
 
         }
     }

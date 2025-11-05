@@ -22,7 +22,7 @@ namespace histopat_back.Infra.Configurations
                 .HasMaxLength(50);
 
             builder.Property(r => r.Active)
-                .HasDefaultValue(true);
+                .IsRequired();
 
             builder.HasMany(r => r.UserRoles)
                 .WithOne(ur => ur.Role)
