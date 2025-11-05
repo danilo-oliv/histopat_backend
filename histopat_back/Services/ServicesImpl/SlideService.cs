@@ -20,7 +20,7 @@ namespace histopat_back.Services.ServicesImpl
         {
             try
             {
-                var slides = await _dbContext.Slides.AsNoTracking().Where(s => s.IdSubTopico == subTopicId).Select(s => _mapper.Map<SlideGet>(s)).ToListAsync();
+                var slides = await _dbContext.Slides.AsNoTracking().Where(s => s.IdSubTopico == subTopicId && s.Active == true).Select(s => _mapper.Map<SlideGet>(s)).ToListAsync();
 
                 return slides;
             }
@@ -49,7 +49,7 @@ namespace histopat_back.Services.ServicesImpl
         {
             try
             {
-                var slideDb = await _dbContext.Slides.AsNoTracking().Where(s => s.Id == slideId).FirstOrDefaultAsync();
+                var slideDb = await _dbContext.Slides.Where(s => s.Id == slideId).FirstOrDefaultAsync();
 
                 if (slideDb == null) throw new Exception(message: $"Não foi encontrada lâmina com o id {slideId}");
 
@@ -79,7 +79,7 @@ namespace histopat_back.Services.ServicesImpl
         {
             try
             {
-                var slideDb = await _dbContext.Slides.AsNoTracking().Where(s => s.Id == slideId).FirstOrDefaultAsync();
+                var slideDb = await _dbContext.Slides.Where(s => s.Id == slideId).FirstOrDefaultAsync();
 
                 if (slideDb == null) throw new Exception(message: $"Não foi encontrada lâmina com o id {slideId}");
 
