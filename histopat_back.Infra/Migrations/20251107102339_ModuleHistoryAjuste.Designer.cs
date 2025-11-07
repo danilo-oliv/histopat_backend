@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using histopat_back.Context;
 
@@ -11,9 +12,11 @@ using histopat_back.Context;
 namespace histopat_back.Infra.Migrations
 {
     [DbContext(typeof(HistopatDbContext))]
-    partial class HistopatDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251107102339_ModuleHistoryAjuste")]
+    partial class ModuleHistoryAjuste
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -297,11 +300,14 @@ namespace histopat_back.Infra.Migrations
                     b.Property<int>("IdUser")
                         .HasColumnType("int");
 
+                    b.Property<int>("TopicId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
-                    b.HasIndex("IdTopic");
-
                     b.HasIndex("IdUser");
+
+                    b.HasIndex("TopicId");
 
                     b.ToTable("TopicHistory");
                 });
@@ -463,15 +469,15 @@ namespace histopat_back.Infra.Migrations
 
             modelBuilder.Entity("histopat_back.Dominio.Models.Topic.TopicHistory", b =>
                 {
-                    b.HasOne("histopat_back.Dominio.Models.Topic.Topic", "Topic")
-                        .WithMany("History")
-                        .HasForeignKey("IdTopic")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("histopat_back.Dominio.Models.User.User", "User")
                         .WithMany("TopicHistories")
                         .HasForeignKey("IdUser")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("histopat_back.Dominio.Models.Topic.Topic", "Topic")
+                        .WithMany("History")
+                        .HasForeignKey("TopicId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
