@@ -1,9 +1,11 @@
-
 using histopat_back.Context;
 using histopat_back.Mapster;
 using histopat_back.Services.Interfaces;
 using histopat_back.Services.Local;
 using Microsoft.EntityFrameworkCore;
+using Mapster;
+using MapsterMapper;
+using histopat_back.Services.ServicesImpl;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -25,13 +27,24 @@ builder.Services.AddControllers().AddJsonOptions(x =>
 // Add services to the container.
 
 builder.Services.AddControllers();
-builder.Services.AddMapster();
+
+// --- 🔧 Configuração do Mapster ---
+var config = TypeAdapterConfig.GlobalSettings;
+
+// Se existir a classe de configuração, registre-a (opcional):
+// histopat_back.Mapster.MapsterConfig.Register(config);
+
+builder.Services.AddSingleton(config);
+builder.Services.AddScoped<IMapper, ServiceMapper>();
+// --- 🔧 fim da configuração ---
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddScoped<IImageStorageService, LocalStorageService>();
+builder.Services.AddScoped<IModuleService, ModuleService>();
 
 // Registra o DbContext no DI
 builder.Services.AddDbContext<HistopatDbContext>(options =>

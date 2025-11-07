@@ -81,14 +81,11 @@ namespace histopat_back.Infra.Migrations
                     b.Property<int>("IdUser")
                         .HasColumnType("int");
 
-                    b.Property<int>("ModuleId")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
 
-                    b.HasIndex("IdUser");
+                    b.HasIndex("IdModule");
 
-                    b.HasIndex("ModuleId");
+                    b.HasIndex("IdUser");
 
                     b.ToTable("ModuleHistory");
                 });
@@ -379,15 +376,15 @@ namespace histopat_back.Infra.Migrations
 
             modelBuilder.Entity("histopat_back.Dominio.Models.Module.ModuleHistory", b =>
                 {
-                    b.HasOne("histopat_back.Dominio.Models.User.User", "User")
-                        .WithMany("ModuleHistories")
-                        .HasForeignKey("IdUser")
+                    b.HasOne("histopat_back.Dominio.Models.Module.Module", "Module")
+                        .WithMany("History")
+                        .HasForeignKey("IdModule")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("histopat_back.Dominio.Models.Module.Module", "Module")
-                        .WithMany("History")
-                        .HasForeignKey("ModuleId")
+                    b.HasOne("histopat_back.Dominio.Models.User.User", "User")
+                        .WithMany("ModuleHistories")
+                        .HasForeignKey("IdUser")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 

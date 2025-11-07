@@ -8,5 +8,6 @@ public class ModuleHistory : BaseHistory
 {
     public int IdModule { get; set; }
 
+    [ForeignKey("IdModule")]
     public Module Module { get; set; } = null!;
 }

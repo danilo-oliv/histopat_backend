@@ -9,10 +9,14 @@ namespace histopat_back.ViewModel.Module
         public string Title { get; set; } = null!;
 
         [Required(ErrorMessage = "Informe a descrição")]
-        [StringLength(150, ErrorMessage = "Limite de 300 caracteres")]
+        [StringLength(300, ErrorMessage = "Limite de 300 caracteres")]
         public string? Description { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "Selecione uma imagem")]
         public string ImageUrl { get; set; } = null!;
+        
+        [Required(ErrorMessage = "Informe se o módulo está ativo ou não")]
+        public bool Active { get; set; }
+
     }
 }

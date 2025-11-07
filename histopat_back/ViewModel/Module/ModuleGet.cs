@@ -10,13 +10,13 @@
 
         public string? Description { get; set; } = string.Empty;
 
-        public ICollection<PartialTopic> Topics { get; set; } = new List<PartialTopic>();
-
         public bool Active { get; set; }
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
         public DateTime? LastModified { get; set; }
+
+        public ICollection<ModuleHistoryGet> History { get; set; } = new List<ModuleHistoryGet>();
 
     }
 }
