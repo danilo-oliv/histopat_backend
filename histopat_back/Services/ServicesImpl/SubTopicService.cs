@@ -2,9 +2,11 @@
 using histopat_back.Dominio.Models.Slide;
 using histopat_back.Dominio.Models.Subtopic;
 using histopat_back.Dominio.Models.Topic;
+using histopat_back.Middlewares;
 using histopat_back.Services.Interfaces;
 using histopat_back.ViewModel.Slide;
 using histopat_back.ViewModel.SubTopic;
+using histopat_back.ViewModel.Topic;
 using MapsterMapper;
 using Microsoft.EntityFrameworkCore;
 
@@ -14,89 +16,80 @@ namespace histopat_back.Services.ServicesImpl
     {
         private HistopatDbContext _dbContext;
         private readonly IMapper _mapper;
-        public SubTopicService(HistopatDbContext dbContext, IMapper mapper)
+        private readonly ILogger<SubTopicService> _logger;
+        public SubTopicService(HistopatDbContext dbContext, IMapper mapper, ILogger<SubTopicService> logger)
         {
             this._dbContext = dbContext;
             this._mapper = mapper;
+            this._logger = logger;
         }
 
-        public async Task<ICollection<SubTopicGet>> FindAllSubTopicsByTopicId(int topicId)
+        public async Task<IEnumerable<SubTopicGet>> FindAllSubTopicsByTopicId(int topicId)
         {
-            try
-            {
-                var subTopics = await _dbContext.SubTopics.AsNoTracking().Where(st => st.IdTopic == topicId && st.Active == true).Select(st => _mapper.Map<SubTopicGet>(st)).ToListAsync();
+            var topic = await _dbContext.Topics.AsNoTracking().Where(t => t.Id == topicId).FirstOrDefaultAsync();
 
-                return subTopics;
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(message: $"Erro ao buscar subtópicos: {ex.ToString}");
-            }
+            if (topic == null) throw new Exception(message: $"Não foi encontrado tópico com id {topicId}");
+
+            var subTopics = await _dbContext.SubTopics.AsNoTracking().Where(st => st.IdTopic == topicId && st.Active == true).Select(st => _mapper.Map<SubTopicGet>(st)).ToListAsync();
+
+            return subTopics;
+        }
+
+        public async Task<SubTopicGet> findById(int subTopicId)
+        {
+            var subTopic = await _dbContext.SubTopics.AsNoTracking().Where(st => st.Id == subTopicId && st.Active == true).Select(st => _mapper.Map<SubTopicGet>(st)).FirstOrDefaultAsync();
+
+            if (subTopic == null) throw new Exception(message: $"Não foi encontrado subtópico com o id {subTopicId}");
+
+            return subTopic;
         }
 
         public async Task SaveSubTopic(SubTopicPost subTopicPost)
         {
-            try
-            {
-                var subTopicEntity = _mapper.Map<Subtopic>(subTopicPost);
+            var topic = await _dbContext.Topics.AsNoTracking().Where(t => t.Id == subTopicPost.IdTopic).FirstOrDefaultAsync();
 
-                await _dbContext.SubTopics.AddAsync(subTopicEntity);
-                await _dbContext.SaveChangesAsync();
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(message: $"Erro ao salvar subtópicos: {ex.ToString}");
-            }
+            if (topic == null) throw new Exception(message: $"Não foi encontrado tópico com o id {subTopicPost.IdTopic}");
+
+            var subTopicEntity = _mapper.Map<Subtopic>(subTopicPost);
+
+            await _dbContext.SubTopics.AddAsync(subTopicEntity);
+            await _dbContext.SaveChangesAsync();
         }
 
         public async Task EditSubTopic(SubTopicEdit subTopicEdit, int subTopicId)
         {
-            try
+            var subTopicDb = await _dbContext.SubTopics.Where(st => st.Id == subTopicId).FirstOrDefaultAsync();
+
+            if (subTopicDb == null) throw new Exception(message: $"Não foi encontrado subtópico com o id {subTopicId}");
+
+            if (subTopicEdit.Title != null)
             {
-                var subTopicDb = await _dbContext.SubTopics.Where(st=> st.Id == subTopicId).FirstOrDefaultAsync();
-
-                if (subTopicDb == null) throw new Exception(message: $"Não foi encontrado subtópico com o id {subTopicId}");
-
-                if (subTopicEdit.Title != null)
-                {
-                    subTopicDb.Title = subTopicEdit.Title;
-                }
-                if (subTopicEdit.Description != null)
-                {
-                    subTopicDb.Description = subTopicEdit.Description;
-                }
-                if (subTopicEdit.ImageUrl != null)
-                {
-                    subTopicDb.ImageUrl = subTopicEdit.ImageUrl;
-                }
-
-                subTopicDb.LastModified = DateTime.Now;
-
-                await _dbContext.SaveChangesAsync();
+                subTopicDb.Title = subTopicEdit.Title;
             }
-            catch (Exception ex)
+            if (subTopicEdit.Description != null)
             {
-                throw new Exception(message: $"Erro ao editar o subtópico: {ex.ToString}");
+                subTopicDb.Description = subTopicEdit.Description;
             }
+            if (subTopicEdit.ImageUrl != null)
+            {
+                subTopicDb.ImageUrl = subTopicEdit.ImageUrl;
+            }
+
+            subTopicDb.LastModified = DateTime.Now;
+
+            await _dbContext.SaveChangesAsync();
         }
 
         public async Task DeleteSubTopic(int subTopicId)
         {
-            try
-            {
-                var subTopicDb = await _dbContext.SubTopics.Where(st => st.Id == subTopicId).FirstOrDefaultAsync();
+            var subTopicDb = await _dbContext.SubTopics.Where(st => st.Id == subTopicId).FirstOrDefaultAsync();
 
-                if (subTopicDb == null) throw new Exception(message: $"Não foi encontrado subtópico com o id {subTopicId}");
+            if (subTopicDb == null) throw new Exception(message: $"Não foi encontrado subtópico com o id {subTopicId}");
 
-                subTopicDb.Active = false;
-                subTopicDb.LastModified = DateTime.Now;
+            subTopicDb.Active = false;
+            subTopicDb.LastModified = DateTime.Now;
 
-                await _dbContext.SaveChangesAsync();
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(message: $"Erro ao excluir o subTópico: {ex.ToString}");
-            }
+            await _dbContext.SaveChangesAsync();
         }
     }
 }

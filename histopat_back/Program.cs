@@ -1,8 +1,10 @@
 
 using histopat_back.Context;
-using histopat_back.Mapster;
+using histopat_back.Middlewares;
 using histopat_back.Services.Interfaces;
 using histopat_back.Services.Local;
+using histopat_back.Services.ServicesImpl;
+using Mapster;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -23,9 +25,13 @@ builder.Services.AddControllers().AddJsonOptions(x =>
 });
 
 // Add services to the container.
-
 builder.Services.AddControllers();
 builder.Services.AddMapster();
+builder.Services.AddScoped<ISubTopicService, SubTopicService>();
+builder.Services.AddScoped<ITopicService, TopicService>();
+builder.Services.AddScoped<ISlideService, SlideService>();
+builder.Services.AddScoped<IModuleService, ModuleService>();
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -38,6 +44,8 @@ builder.Services.AddDbContext<HistopatDbContext>(options =>
     options.UseSqlServer(connectionString));
 
 var app = builder.Build();
+
+app.UseMiddleware<ExceptionHandlingMiddleware>();
 
 app.UseStaticFiles(new StaticFileOptions
 {

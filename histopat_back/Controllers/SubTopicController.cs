@@ -2,6 +2,10 @@ using histopat_back.Context;
 using histopat_back.Dominio.Models.Subtopic;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using histopat_back.Services.ServicesImpl;
+using Microsoft.AspNetCore.Http.HttpResults;
+using histopat_back.ViewModel.SubTopic;
+using histopat_back.Services.Interfaces;
 
 namespace histopat_back.Controllers;
 
@@ -9,88 +13,58 @@ namespace histopat_back.Controllers;
 [Route("api/[controller]")]
 public class SubTopicController : ControllerBase
 {
-    private readonly HistopatDbContext _context;
-
-    public SubTopicController(HistopatDbContext context)
+    private ISubTopicService _subTopicService;
+    public SubTopicController(ISubTopicService subTopicService)
     {
-        _context = context;
+        this._subTopicService = subTopicService;
     }
 
-    // GET: api/SubTopic
-    [HttpGet]
-    public async Task<ActionResult<IEnumerable<Subtopic>>> GetSubTopics()
+    // GET: api/SubTopic/topic/2
+    [HttpGet("/topic/{topicId}")]
+    public async Task<ActionResult> FindAllSubTopicsByTopicId(int topicId)
     {
-        return await _context.SubTopics.ToListAsync();
+        var subTopics = await _subTopicService.FindAllSubTopicsByTopicId(topicId);
+
+        return Ok(subTopics);
     }
 
     // GET: api/SubTopic/5
     [HttpGet("{id}")]
-    public async Task<ActionResult<Subtopic>> GetSubTopic(int id)
+    public async Task<ActionResult> FindById(int id)
     {
-        var subTopic = await _context.SubTopics
-            .Include(s => s.Slides)
-            .FirstOrDefaultAsync(s => s.Id == id);
+        var subTopic = await _subTopicService.findById(id);
 
-        if (subTopic == null)
-            return NotFound();
-
-        return subTopic;
+        return Ok(subTopic);
     }
 
     // POST: api/SubTopic
     [HttpPost]
-    public async Task<ActionResult<Subtopic>> CreateSubTopic(Subtopic subTopic)
+    public async Task<ActionResult> SaveSubTopic(SubTopicPost subTopic)
     {
-        subTopic.CreatedAt = DateTime.UtcNow;
+        if (!ModelState.IsValid) return BadRequest(ModelState);
 
-        _context.SubTopics.Add(subTopic);
-        await _context.SaveChangesAsync();
+        await _subTopicService.SaveSubTopic(subTopic);
 
-        return CreatedAtAction(nameof(GetSubTopic), new { id = subTopic.Id }, subTopic);
+        return Created();
     }
 
     // PUT: api/SubTopic/5
-    [HttpPut("{id}")]
-    public async Task<IActionResult> UpdateSubTopic(int id, Subtopic updatedSubTopic)
+    [HttpPut("{subTopicId}")]
+    public async Task<IActionResult> EditSubTopic(SubTopicEdit subTopicEdit, int subTopicId)
     {
-        if (id != updatedSubTopic.Id)
-            return BadRequest();
+        if (!ModelState.IsValid) return BadRequest(ModelState);
 
-        var subTopic = await _context.SubTopics.FindAsync(id);
-        if (subTopic == null)
-            return NotFound();
-
-        subTopic.Title = updatedSubTopic.Title;
-        subTopic.Active = updatedSubTopic.Active;
-        subTopic.LastModified = DateTime.UtcNow;
-
-        await _context.SaveChangesAsync();
+        await _subTopicService.EditSubTopic(subTopicEdit, subTopicId);
 
         return NoContent();
     }
 
     // DELETE: api/SubTopic/5
-    [HttpDelete("{id}")]
-    public async Task<IActionResult> DeleteSubTopic(int id)
+    [HttpDelete("{subTopicId}")]
+    public async Task<IActionResult> DeleteSubTopic(int subTopicId)
     {
-        var subTopic = await _context.SubTopics.FindAsync(id);
-        if (subTopic == null)
-            return NotFound();
-
-        _context.SubTopics.Remove(subTopic);
-        await _context.SaveChangesAsync();
+        await _subTopicService.DeleteSubTopic(subTopicId);
 
         return NoContent();
-    }
-
-    // GET: api/SubTopic/topic/3 (retorna todos os sub-tópicos de um tópico)
-    [HttpGet("topic/{topicId}")]
-    public async Task<ActionResult<IEnumerable<Subtopic>>> GetSubTopicsByTopic(int topicId)
-    {
-        var subTopics = await _context.SubTopics
-            .Where(s => s.IdTopic == topicId)
-            .ToListAsync();
-
-        return subTopics;
     }
 }
