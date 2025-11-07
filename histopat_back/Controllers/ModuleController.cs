@@ -1,115 +1,66 @@
 
 
-using histopat_back.Context;
-using histopat_back.Dominio.Models.Module;
 using histopat_back.Services.Interfaces;
+using histopat_back.ViewModel.Module;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 namespace histopat_back.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
 public class ModuleController : ControllerBase
 {
-    private readonly HistopatDbContext _context;
-    private readonly IImageStorageService _storage;
-
-
-    public ModuleController(HistopatDbContext context, IImageStorageService storage)
+    private IModuleService _moduleService;
+    public ModuleController(IModuleService moduleService)
     {
-        _context = context;
-        _storage = storage;
+        this._moduleService = moduleService;
     }
 
     // GET: api/Module
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<Module>>> GetModules()
+    public async Task<ActionResult> FindAllModules()
     {
-        return await _context.Modules
-            .Include(m => m.Topics) // inclui tópicos relacionados
-            .ToListAsync();
+        var modules = await _moduleService.FindAllModules();
+
+        return Ok(modules);
     }
 
     // GET: api/Module/5
-    [HttpGet("{id}")]
-    public async Task<ActionResult<Module>> GetModule(int id)
+    [HttpGet("{moduleId}")]
+    public async Task<ActionResult> FindById(int moduleId)
     {
-        var module = await _context.Modules
-            .Include(m => m.Topics)
-            .ThenInclude(t => t.SubTopics)
-            .FirstOrDefaultAsync(m => m.Id == id);
+        var module = await _moduleService.FindById(moduleId);
 
-        if (module == null)
-            return NotFound();
-
-        return module;
+        return Ok(module);
     }
 
     // POST: api/Module
     [HttpPost]
-    public async Task<ActionResult<Module>> CreateModule(Module module)
+    public async Task<ActionResult> SaveModule(ModulePost modulePost)
     {
-        module.CreatedAt = DateTime.UtcNow;
+        if (!ModelState.IsValid) return BadRequest(ModelState);
 
-        _context.Modules.Add(module);
-        await _context.SaveChangesAsync();
+        await _moduleService.SaveModule(modulePost);
 
-        return CreatedAtAction(nameof(GetModule), new { id = module.Id }, module);
+        return Created();
     }
 
     // PUT: api/Module/5
-    [HttpPut("{id}")]
-    public async Task<IActionResult> UpdateModule(int id, Module updatedModule)
+    [HttpPut("{moduleId}")]
+    public async Task<IActionResult> EditModule(ModuleEdit moduleEdit, int moduleId)
     {
-        if (id != updatedModule.Id)
-            return BadRequest();
+        if (!ModelState.IsValid) return BadRequest(ModelState);
 
-        var module = await _context.Modules.FindAsync(id);
-        if (module == null)
-            return NotFound();
-
-        // Atualiza campos
-        module.Title = updatedModule.Title;
-        module.Active = updatedModule.Active;
-        module.LastModified = DateTime.UtcNow;
-
-        await _context.SaveChangesAsync();
+        await _moduleService.EditModule(moduleEdit, moduleId);
 
         return NoContent();
     }
 
     // DELETE: api/Module/5
-    [HttpDelete("{id}")]
-    public async Task<IActionResult> DeleteModule(int id)
+    [HttpDelete("{moduleId}")]
+    public async Task<IActionResult> DeleteModule(int moduleId)
     {
-        var module = await _context.Modules.FindAsync(id);
-        if (module == null)
-            return NotFound();
-
-        _context.Modules.Remove(module);
-        await _context.SaveChangesAsync();
+        await _moduleService.DeleteModule(moduleId);
 
         return NoContent();
-    }
-
-    [HttpPost("upload")]
-    public async Task<IActionResult> Upload(IFormFile file)
-    {
-        using var stream = file.OpenReadStream();
-        var result = await _storage.SaveImageAsync(stream, file.FileName);
-        return Ok(new { Path = result });
-    }
-
-    [HttpGet("download/{fileName}")]    public async Task<IActionResult> Download(string fileName)
-    {
-        try
-        {
-            var (stream, contentType) = await _storage.DownloadAsync(fileName);
-            return File(stream, contentType, fileName);
-        }
-        catch (FileNotFoundException)
-        {
-            return NotFound("Imagem não encontrada.");
-        }
     }
 }

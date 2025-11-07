@@ -12,7 +12,7 @@ namespace histopat_back.Dominio.Models.Base
 
         public string Title { get; set; } = null!;
 
-        public bool Active { get; set; }
+        public bool Active { get; set; } = true;
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 

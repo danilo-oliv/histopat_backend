@@ -1,6 +1,9 @@
 
 using histopat_back.Context;
 using histopat_back.Dominio.Models.Topic;
+using histopat_back.Services.Interfaces;
+using histopat_back.ViewModel.Module;
+using histopat_back.ViewModel.Topic;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -10,91 +13,55 @@ namespace histopat_back.Controllers;
 [Route("api/[controller]")]
 public class TopicController : ControllerBase
 {
-    private readonly HistopatDbContext _context;
-
-    public TopicController(HistopatDbContext context)
+    private ITopicService _topicService;
+    public TopicController(ITopicService topicService)
     {
-        _context = context;
+        this._topicService = topicService;
     }
 
-    // GET: api/Topic
-    [HttpGet]
-    public async Task<ActionResult<IEnumerable<Topic>>> GetTopics()
+    // GET: api/Topic/module/5
+    [HttpGet("/module/{moduleId}")]
+    public async Task<ActionResult> FindAllTopicsByModuleId(int moduleId)
     {
-        return await _context.Topics
-            .Include(t => t.SubTopics) // inclui sub-tópicos relacionados
-            .ToListAsync();
+        var topics = await _topicService.FindAllTopicsByModuleId(moduleId);
+
+        return Ok(topics);
     }
 
-    // GET: api/Topic/5
-    [HttpGet("{id}")]
-    public async Task<ActionResult<Topic>> GetTopic(int id)
+    // GET: api/Module/5
+    [HttpGet("{topicId}")]
+    public async Task<ActionResult> findById(int topicId)
     {
-        var topic = await _context.Topics
-            .Include(t => t.SubTopics)
-            .FirstOrDefaultAsync(t => t.Id == id);
+        var topic = await _topicService.FindById(topicId);
 
-        if (topic == null)
-            return NotFound();
-
-        return topic;
+        return Ok(topic);
     }
 
     // POST: api/Topic
     [HttpPost]
-    public async Task<ActionResult<Topic>> CreateTopic(Topic topic)
+    public async Task<ActionResult> saveTopic(TopicPost topicPost)
     {
-        topic.CreatedAt = DateTime.UtcNow;
+        await _topicService.SaveTopic(topicPost);
 
-        _context.Topics.Add(topic);
-        await _context.SaveChangesAsync();
-
-        return CreatedAtAction(nameof(GetTopic), new { id = topic.Id }, topic);
+        return Created();
     }
 
     // PUT: api/Topic/5
-    [HttpPut("{id}")]
-    public async Task<IActionResult> UpdateTopic(int id, Topic updatedTopic)
+    [HttpPut("{topicId}")]
+    public async Task<IActionResult> EditTopic(TopicEdit topicEdit, int topicId)
     {
-        if (id != updatedTopic.Id)
-            return BadRequest();
 
-        var topic = await _context.Topics.FindAsync(id);
-        if (topic == null)
-            return NotFound();
-
-        topic.Title = updatedTopic.Title;
-        topic.Active = updatedTopic.Active;
-        topic.LastModified = DateTime.UtcNow;
-
-        await _context.SaveChangesAsync();
+        await _topicService.EditTopic(topicEdit, topicId);
 
         return NoContent();
     }
 
     // DELETE: api/Topic/5
-    [HttpDelete("{id}")]
-    public async Task<IActionResult> DeleteTopic(int id)
+    [HttpDelete("{topicId}")]
+    public async Task<IActionResult> DeleteTopic(int topicId)
     {
-        var topic = await _context.Topics.FindAsync(id);
-        if (topic == null)
-            return NotFound();
-
-        _context.Topics.Remove(topic);
-        await _context.SaveChangesAsync();
+        await _topicService.DeleteTopic(topicId);
 
         return NoContent();
-    }
-
-    // GET: api/Topic/module/2 (retorna todos os tópicos de um módulo)
-    [HttpGet("module/{moduleId}")]
-    public async Task<ActionResult<IEnumerable<Topic>>> GetTopicsByModule(int moduleId)
-    {
-        var topics = await _context.Topics
-            .Where(t => t.IdModule == moduleId)
-            .Include(t => t.SubTopics)
-            .ToListAsync();
-
-        return topics;
     }
 }

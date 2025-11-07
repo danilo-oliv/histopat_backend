@@ -4,9 +4,10 @@ namespace histopat_back.Services.Interfaces
 {
     public interface ITopicService
     {
-        public Task<TopicGet> FindAllTopicsById(int topicId);
-        public void SaveTopic(TopicPost topicPost);
-        public void EditTopic(TopicPost topicEdit);
-        public void DeleteTopic(int topicId);
+        public Task<IEnumerable<TopicGet>> FindAllTopicsByModuleId(int topicId);
+        public Task<TopicGet> FindById(int topicId);
+        public Task SaveTopic(TopicPost topicPost);
+        public Task EditTopic(TopicEdit topicEdit, int topicId);
+        public Task DeleteTopic(int topicId);
     }
 }
