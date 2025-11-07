@@ -1,100 +1,218 @@
-
 using histopat_back.Context;
 using histopat_back.Dominio.Models.Topic;
+using histopat_back.Services.Interfaces;
+using histopat_back.ViewModel.Topic;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-namespace histopat_back.Controllers;
-
-[ApiController]
-[Route("api/[controller]")]
-public class TopicController : ControllerBase
+namespace histopat_back.Controllers
 {
-    private readonly HistopatDbContext _context;
-
-    public TopicController(HistopatDbContext context)
+    [ApiController]
+    [Route("api/[controller]")]
+    public class TopicController : ControllerBase
     {
-        _context = context;
-    }
+        private readonly HistopatDbContext _context;
+        private readonly IImageStorageService _imageStorageService;
 
-    // GET: api/Topic
-    [HttpGet]
-    public async Task<ActionResult<IEnumerable<Topic>>> GetTopics()
-    {
-        return await _context.Topics
-            .Include(t => t.SubTopics) // inclui sub-tópicos relacionados
-            .ToListAsync();
-    }
+        public TopicController(HistopatDbContext context, IImageStorageService imageStorageService)
+        {
+            _context = context;
+            _imageStorageService = imageStorageService;
+        }
 
-    // GET: api/Topic/5
-    [HttpGet("{id}")]
-    public async Task<ActionResult<Topic>> GetTopic(int id)
-    {
-        var topic = await _context.Topics
-            .Include(t => t.SubTopics)
-            .FirstOrDefaultAsync(t => t.Id == id);
+        [HttpGet]
+        public async Task<IActionResult> GetAll()
+        {
+            var topics = await _context.Topics
+                .AsNoTracking()
+                .ToListAsync();
 
-        if (topic == null)
-            return NotFound();
+            var histories = await _context.Set<TopicHistory>()
+                .AsNoTracking()
+                .ToListAsync();
 
-        return topic;
-    }
+            var result = topics.Select(t => new TopicGet
+            {
+                Id = t.Id,
+                IdModule = t.IdModule,
+                Title = t.Title,
+                Active = t.Active,
+                CreatedAt = t.CreatedAt,
+                LastModified = t.LastModified,
+                History = histories
+                    .Where(h => h.IdTopic == t.Id)
+                    .OrderByDescending(h => h.ChangedAt)
+                    .Select(h => new TopicHistoryGet
+                    {
+                        Id = h.Id,
+                        Action = h.Action,
+                        ChangedAt = h.ChangedAt,
+                        IdUser = h.IdUser
+                    })
+                    .ToList()
+            }).ToList();
 
-    // POST: api/Topic
-    [HttpPost]
-    public async Task<ActionResult<Topic>> CreateTopic(Topic topic)
-    {
-        topic.CreatedAt = DateTime.UtcNow;
+            return Ok(result);
+        }
 
-        _context.Topics.Add(topic);
-        await _context.SaveChangesAsync();
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetById(int id)
+        {
+            var topic = await _context.Topics
+                .AsNoTracking()
+                .FirstOrDefaultAsync(t => t.Id == id);
 
-        return CreatedAtAction(nameof(GetTopic), new { id = topic.Id }, topic);
-    }
+            if (topic == null)
+                return NotFound($"Tópico com ID {id} não encontrado.");
 
-    // PUT: api/Topic/5
-    [HttpPut("{id}")]
-    public async Task<IActionResult> UpdateTopic(int id, Topic updatedTopic)
-    {
-        if (id != updatedTopic.Id)
-            return BadRequest();
+            var history = await _context.Set<TopicHistory>()
+                .Where(h => h.IdTopic == id)
+                .OrderByDescending(h => h.ChangedAt)
+                .Select(h => new TopicHistoryGet
+                {
+                    Id = h.Id,
+                    Action = h.Action,
+                    ChangedAt = h.ChangedAt,
+                    IdUser = h.IdUser
+                })
+                .ToListAsync();
 
-        var topic = await _context.Topics.FindAsync(id);
-        if (topic == null)
-            return NotFound();
+            var result = new TopicGet
+            {
+                Id = topic.Id,
+                IdModule = topic.IdModule,
+                Title = topic.Title,
+                Active = topic.Active,
+                CreatedAt = topic.CreatedAt,
+                LastModified = topic.LastModified,
+                History = history
+            };
 
-        topic.Title = updatedTopic.Title;
-        topic.Active = updatedTopic.Active;
-        topic.LastModified = DateTime.UtcNow;
+            return Ok(result);
+        }
 
-        await _context.SaveChangesAsync();
+        [HttpPost]
+        public async Task<IActionResult> Post([FromBody] TopicPost topicPost)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
 
-        return NoContent();
-    }
+            var moduleExists = await _context.Modules.AnyAsync(m => m.Id == topicPost.IdModule);
+            if (!moduleExists)
+                return NotFound($"Módulo com ID {topicPost.IdModule} não encontrado.");
 
-    // DELETE: api/Topic/5
-    [HttpDelete("{id}")]
-    public async Task<IActionResult> DeleteTopic(int id)
-    {
-        var topic = await _context.Topics.FindAsync(id);
-        if (topic == null)
-            return NotFound();
+            var topic = new Topic
+            {
+                Title = topicPost.Title,
+                IdModule = topicPost.IdModule,
+                Active = true,
+                CreatedAt = DateTime.UtcNow,
+                LastModified = DateTime.UtcNow
+            };
 
-        _context.Topics.Remove(topic);
-        await _context.SaveChangesAsync();
+            _context.Topics.Add(topic);
+            await _context.SaveChangesAsync();
 
-        return NoContent();
-    }
+            var history = new TopicHistory
+            {
+                IdTopic = topic.Id,
+                ChangedAt = DateTime.UtcNow,
+                IdUser = GetUserId(),
+                Action = "Created"
+            };
 
-    // GET: api/Topic/module/2 (retorna todos os tópicos de um módulo)
-    [HttpGet("module/{moduleId}")]
-    public async Task<ActionResult<IEnumerable<Topic>>> GetTopicsByModule(int moduleId)
-    {
-        var topics = await _context.Topics
-            .Where(t => t.IdModule == moduleId)
-            .Include(t => t.SubTopics)
-            .ToListAsync();
+            _context.Set<TopicHistory>().Add(history);
+            await _context.SaveChangesAsync();
 
-        return topics;
+            return Ok(new { message = "Tópico criado com sucesso!", topic.Id });
+        }
+
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Put(int id, [FromBody] TopicEdit topicEdit)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var topic = await _context.Topics.FindAsync(id);
+            if (topic == null)
+                return NotFound("Tópico não encontrado.");
+
+            topic.Title = topicEdit.Title ?? topic.Title;
+            topic.Active = topicEdit.Active ?? topic.Active;
+            topic.LastModified = DateTime.UtcNow;
+
+            await _context.SaveChangesAsync();
+
+            var history = new TopicHistory
+            {
+                IdTopic = topic.Id,
+                ChangedAt = DateTime.UtcNow,
+                IdUser = GetUserId(),
+                Action = "Updated"
+            };
+
+            _context.Set<TopicHistory>().Add(history);
+            await _context.SaveChangesAsync();
+
+            return Ok(new { message = "Tópico atualizado com sucesso!" });
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var topic = await _context.Topics.FindAsync(id);
+            if (topic == null)
+                return NotFound("Tópico não encontrado.");
+
+            topic.Active = false;
+            topic.LastModified = DateTime.UtcNow;
+
+            await _context.SaveChangesAsync();
+
+            var history = new TopicHistory
+            {
+                IdTopic = topic.Id,
+                ChangedAt = DateTime.UtcNow,
+                IdUser = GetUserId(),
+                Action = "Deactivated"
+            };
+
+            _context.Set<TopicHistory>().Add(history);
+            await _context.SaveChangesAsync();
+
+            return Ok(new { message = "Tópico desativado com sucesso!" });
+        }
+
+        [HttpPost("upload")]
+        public async Task<IActionResult> UploadImage(IFormFile file)
+        {
+            if (file == null || file.Length == 0)
+                return BadRequest("Nenhum arquivo enviado.");
+
+            using var stream = file.OpenReadStream();
+            var imagePath = await _imageStorageService.SaveImageAsync(stream, file.FileName);
+            return Ok(new { path = imagePath });
+        }
+
+        [HttpGet("download/{fileName}")]
+        public async Task<IActionResult> DownloadImage(string fileName)
+        {
+            try
+            {
+                var (stream, contentType) = await _imageStorageService.DownloadAsync(fileName);
+                return File(stream, contentType, fileName);
+            }
+            catch (FileNotFoundException)
+            {
+                return NotFound("Imagem não encontrada.");
+            }
+        }
+
+        private int GetUserId()
+        {
+            // temporário
+            return 1;
+        }
     }
 }

@@ -45,6 +45,7 @@ builder.Services.AddSwaggerGen();
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddScoped<IImageStorageService, LocalStorageService>();
 builder.Services.AddScoped<IModuleService, ModuleService>();
+builder.Services.AddScoped<ITopicService, TopicService>();
 
 // Registra o DbContext no DI
 builder.Services.AddDbContext<HistopatDbContext>(options =>
