@@ -20,7 +20,7 @@ public class TopicController : ControllerBase
     }
 
     // GET: api/Topic/module/5
-    [HttpGet("/module/{moduleId}")]
+    [HttpGet("module/{moduleId}")]
     public async Task<ActionResult> FindAllTopicsByModuleId(int moduleId)
     {
         var topics = await _topicService.FindAllTopicsByModuleId(moduleId);
