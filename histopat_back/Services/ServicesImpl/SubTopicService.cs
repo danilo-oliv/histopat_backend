@@ -30,14 +30,14 @@ namespace histopat_back.Services.ServicesImpl
 
             if (topic == null) throw new Exception(message: $"Não foi encontrado tópico com id {topicId}");
 
-            var subTopics = await _dbContext.SubTopics.AsNoTracking().Where(st => st.IdTopic == topicId && st.Active == true).Select(st => _mapper.Map<SubTopicGet>(st)).ToListAsync();
+            var subTopics = await _dbContext.SubTopics.AsNoTracking().Where(st => st.IdTopic == topicId && st.Active == true).Include(st => st.Slides.Where(s => s.Active == true)).Select(st => _mapper.Map<SubTopicGet>(st)).ToListAsync();
 
             return subTopics;
         }
 
         public async Task<SubTopicGet> findById(int subTopicId)
         {
-            var subTopic = await _dbContext.SubTopics.AsNoTracking().Where(st => st.Id == subTopicId && st.Active == true).Select(st => _mapper.Map<SubTopicGet>(st)).FirstOrDefaultAsync();
+            var subTopic = await _dbContext.SubTopics.AsNoTracking().Where(st => st.Id == subTopicId && st.Active == true).Include(st => st.Slides.Where(s => s.Active == true)).Select(st => _mapper.Map<SubTopicGet>(st)).FirstOrDefaultAsync();
 
             if (subTopic == null) throw new Exception(message: $"Não foi encontrado subtópico com o id {subTopicId}");
 
