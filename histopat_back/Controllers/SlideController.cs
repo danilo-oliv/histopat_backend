@@ -16,7 +16,7 @@ namespace histopat_back.Controllers
         }
 
         // GET: api/Slide/subtopic/5
-        [HttpGet("/subtopic/{subTopicId}")]
+        [HttpGet("subtopic/{subTopicId}")]
         public async Task<ActionResult> FindAllSlidesBySubTopicId(int subTopicId)
         {
             var slides = await _slideService.FindAllSlidesBySubTopicId(subTopicId);

@@ -20,7 +20,7 @@ public class SubTopicController : ControllerBase
     }
 
     // GET: api/SubTopic/topic/2
-    [HttpGet("/topic/{topicId}")]
+    [HttpGet("topic/{topicId}")]
     public async Task<ActionResult> FindAllSubTopicsByTopicId(int topicId)
     {
         var subTopics = await _subTopicService.FindAllSubTopicsByTopicId(topicId);
