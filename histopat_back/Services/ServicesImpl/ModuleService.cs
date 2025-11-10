@@ -23,7 +23,7 @@ namespace histopat_back.Services.ServicesImpl
 
         public async Task<IEnumerable<ModuleGet>> FindAllModules()
         {
-            var modules = await _dbContext.Modules.AsNoTracking().Where(m => m.Active == true).Include(m => m.Topics).ToListAsync();
+            var modules = await _dbContext.Modules.AsNoTracking().Where(m => m.Active == true).Include(m => m.Topics.Where(t => t.Active == true)).ToListAsync();
 
             var mappedModules = _mapper.Map<IEnumerable<ModuleGet>>(modules);
 
@@ -32,7 +32,7 @@ namespace histopat_back.Services.ServicesImpl
 
         public async Task<ModuleGet> FindById(int moduleId)
         {
-            var module = await _dbContext.Modules.AsNoTracking().Where(m => m.Id == moduleId && m.Active == true).Select(m => _mapper.Map<ModuleGet>(m)).FirstOrDefaultAsync();
+            var module = await _dbContext.Modules.AsNoTracking().Where(m => m.Id == moduleId && m.Active == true).Include(m => m.Topics.Where(t => t.Active == true)).Select(m => _mapper.Map<ModuleGet>(m)).FirstOrDefaultAsync();
 
             if (module == null) throw new Exception(message: $"Não foi encontrado módulo com o id {moduleId}");
 

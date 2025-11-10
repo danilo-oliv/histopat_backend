@@ -1,4 +1,4 @@
-﻿namespace histopat_back.ViewModel.Topic
+﻿namespace histopat_back.ViewModel.SubTopic
 {
     public class PartialSlide
     {

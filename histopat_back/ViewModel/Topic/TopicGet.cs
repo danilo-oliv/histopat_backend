@@ -10,6 +10,8 @@
 
         public bool Active { get; set; }
 
+        public ICollection<PartialSlide> SubTopics { get; set; } = new List<PartialSlide>();
+
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
         public DateTime? LastModified { get; set; }

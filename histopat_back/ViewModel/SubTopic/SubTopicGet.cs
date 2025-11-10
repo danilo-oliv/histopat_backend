@@ -10,6 +10,8 @@
 
         public string ImageUrl { get; set; } = null!;
 
+        public ICollection<PartialSlide> Slides { get; set; } = new List<PartialSlide>();
+
         public int IdTopic { get; set; }
 
     }
