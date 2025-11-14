@@ -1,11 +1,15 @@
 
+using CloudinaryDotNet;
+using histopat_back.Configurations;
 using histopat_back.Context;
 using histopat_back.Middlewares;
 using histopat_back.Services.Interfaces;
 using histopat_back.Services.Local;
+using histopat_back.Services.Remote;
 using histopat_back.Services.ServicesImpl;
 using Mapster;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -32,12 +36,27 @@ builder.Services.AddScoped<ITopicService, TopicService>();
 builder.Services.AddScoped<ISlideService, SlideService>();
 builder.Services.AddScoped<IModuleService, ModuleService>();
 
+builder.Services.Configure<CloudinarySettings>(builder.Configuration.GetSection("CloudinarySettings"));
+
+builder.Services.AddSingleton(sp =>
+{
+    var cloudinarySettings = sp.GetRequiredService<IOptions<CloudinarySettings>>().Value;
+
+    Account account = new Account(
+        cloudinarySettings.CloudName,
+        cloudinarySettings.ApiKey,
+        cloudinarySettings.ApiSecret);
+
+    return new Cloudinary(account);
+});
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-builder.Services.AddScoped<IImageStorageService, LocalStorageService>();
+
+builder.Services.AddScoped<IImageStorageService, RemoteStorageService>();
 
 // Registra o DbContext no DI
 builder.Services.AddDbContext<HistopatDbContext>(options =>
