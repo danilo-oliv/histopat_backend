@@ -64,4 +64,10 @@ public class TopicController : ControllerBase
 
         return NoContent();
     }
+
+    [HttpGet("/total-topics")]
+    public async Task<IActionResult> GetTotalTopics()
+    {
+        return Ok(await _topicService.GetTotalTopics());
+    }
 }

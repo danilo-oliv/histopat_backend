@@ -2,6 +2,7 @@
 using histopat_back.ViewModel.Slide;
 using histopat_back.ViewModel.Topic;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace histopat_back.Controllers
 {
@@ -63,5 +64,18 @@ namespace histopat_back.Controllers
 
             return NoContent();
         }
+
+        [HttpGet("/slides-per-module")]
+        public async Task<IActionResult> GetSlidesPorModulo()
+        {
+            return Ok(await _slideService.GetTotalSlidesPorModulo());
+        }
+
+        [HttpGet("/total-slides")]
+        public async Task<IActionResult> GetTotalSlides()
+        {
+            return Ok(await _slideService.GetTotalSlides());
+        }
+
     }
 }

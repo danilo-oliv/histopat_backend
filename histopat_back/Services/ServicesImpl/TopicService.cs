@@ -80,5 +80,11 @@ namespace histopat_back.Services.ServicesImpl
 
             await _dbContext.SaveChangesAsync();
         }
+
+        public async Task<int> GetTotalTopics()
+        {
+            return await _dbContext.Topics
+                .CountAsync(t => t.Active == true);
+        }
     }
 }

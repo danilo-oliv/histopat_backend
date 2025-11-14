@@ -88,5 +88,28 @@ namespace histopat_back.Services.ServicesImpl
 
             await _dbContext.SaveChangesAsync();
         }
+
+        public async Task<IEnumerable<SlidesPerModule>> GetTotalSlidesPorModulo()
+        {
+            var resultado = await _dbContext.Modules
+                    .Select(m => new SlidesPerModule
+                    {
+                        ModuleId = m.Id,
+                        ModuleTitle = m.Title,
+                        TotalSlides = _dbContext.Topics
+                            .Where(t => t.IdModule == m.Id)
+                            .SelectMany(t => t.SubTopics)
+                            .SelectMany(s => s.Slides)
+                            .Count(sl => sl.Active == true)
+                    })
+                    .ToListAsync();
+
+            return resultado;
+        }
+        public async Task<int> GetTotalSlides()
+        {
+            return await _dbContext.Slides
+                .CountAsync(sl => sl.Active == true);
+        }
     }
 }
