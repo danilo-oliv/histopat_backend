@@ -9,5 +9,7 @@ namespace histopat_back.Services.Interfaces
         public Task SaveTopic(TopicPost topicPost);
         public Task EditTopic(TopicEdit topicEdit, int topicId);
         public Task DeleteTopic(int topicId);
+
+        public Task<int> GetTotalTopics();
     }
 }

@@ -11,7 +11,7 @@ namespace histopat_back.Infra.Context
         {
             var optionsBuilder = new DbContextOptionsBuilder<HistopatDbContext>();
             optionsBuilder.UseSqlServer(
-            "Server=DESKTOP-OQ1NRH7;Database=histopat;Integrated Security=True;TrustServerCertificate=True;");
+            "Server=localhost,1433;Database=histopat;User Id=sa;Password=YourStrong!Passw0rd;TrustServerCertificate=True;Encrypt=False;");
             return new HistopatDbContext(optionsBuilder.Options);
         }
     }

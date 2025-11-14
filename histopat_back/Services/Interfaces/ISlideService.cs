@@ -9,5 +9,9 @@ namespace histopat_back.Services.Interfaces
         public Task SaveSlide(SlidePost slidePost);
         public Task EditSlide(SlideEdit slideEdit, int slideId);
         public Task DeleteSlide(int slideId);
+        public Task<IEnumerable<SlidesPerModule>> GetTotalSlidesPorModulo();
+        public Task<int> GetTotalSlides();
+
+
     }
 }
