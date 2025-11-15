@@ -1,5 +1,4 @@
 ﻿using histopat_back.ViewModel.Module;
-using histopat_back.ViewModel.Slide;
 
 namespace histopat_back.Services.Interfaces
 {

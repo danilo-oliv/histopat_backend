@@ -5,7 +5,6 @@ namespace histopat_back.Dominio.Models.User;
 
 public class UserRole
 {
-    public int IdUserRole { get; set; }
     public int IdUser { get; set; }
     public byte IdRole { get; set; }
 
