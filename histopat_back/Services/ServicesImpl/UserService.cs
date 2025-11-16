@@ -1,6 +1,7 @@
 ﻿using histopat_back.Context;
 using histopat_back.Dominio.Models.User;
 using histopat_back.Services.Interfaces;
+using histopat_back.ViewModel.Role;
 using histopat_back.ViewModel.User;
 using MapsterMapper;
 using Microsoft.EntityFrameworkCore;
@@ -22,29 +23,55 @@ namespace histopat_back.Services.ServicesImpl
 
         public async Task<IEnumerable<UserGet>> FindAllUsers()
         {
-            var users = await _dbContext.Users
-                .Include(u => u.UserRoles.Where(ur => ur.Active))
-                .ThenInclude(ur => ur.Role)
+            var result = await _dbContext.Users
                 .Where(u => u.Active)
                 .AsNoTracking()
+                .Select(u => new UserGet
+                {
+                    IdUser = u.IdUser,
+                    Name = u.Name,
+                    Active = u.Active,
+                    Roles = u.UserRoles
+                        .Where(ur => ur.Active && ur.Role.Active)
+                        .Select(ur => new RoleGet
+                        {
+                            IdRole = ur.Role.IdRole,
+                            Name = ur.Role.Name,
+                            Active = ur.Role.Active
+                        }).ToList()
+                })
                 .ToListAsync();
 
-            return _mapper.Map<IEnumerable<UserGet>>(users);
+            return result;
         }
 
         public async Task<UserGet> FindById(int userId)
         {
-            var user = await _dbContext.Users
-                .Include(u => u.UserRoles.Where(ur => ur.Active))
-                .ThenInclude(ur => ur.Role)
+            var result = await _dbContext.Users
                 .Where(u => u.IdUser == userId && u.Active)
                 .AsNoTracking()
+                .Select(u => new UserGet
+                {
+                    IdUser = u.IdUser,
+                    Name = u.Name,
+                    Active = u.Active,
+                    Roles = u.UserRoles
+                        .Where(ur => ur.Active && ur.Role.Active)
+                        .Select(ur => new RoleGet
+                        {
+                            IdRole = ur.Role.IdRole,
+                            Name = ur.Role.Name,
+                            Active = ur.Role.Active
+                        }).ToList()
+                })
                 .FirstOrDefaultAsync();
 
-            if (user == null)
-                throw new Exception($"Não foi encontrado usuário com o id {userId}");
+            if (result == null)
+            {
+                throw new Exception($"Não foi encontrado usuário ativo com o id {userId}");
+            }
 
-            return _mapper.Map<UserGet>(user);
+            return result;
         }
 
         public async Task SaveUser(UserPost userPost)
