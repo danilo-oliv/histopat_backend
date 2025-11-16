@@ -1,6 +1,7 @@
 ﻿using histopat_back.Context;
 using histopat_back.Dominio.Models.Slide;
 using histopat_back.Dominio.Models.Subtopic;
+using histopat_back.Dominio.Models.Topic;
 using histopat_back.Services.Interfaces;
 using histopat_back.ViewModel.Slide;
 using histopat_back.ViewModel.Topic;
@@ -79,14 +80,15 @@ namespace histopat_back.Services.ServicesImpl
 
         public async Task DeleteSlide(int slideId)
         {
-            var slideDb = await _dbContext.Slides.Where(s => s.Id == slideId).FirstOrDefaultAsync();
+            bool exists = await _dbContext.Slides.AnyAsync(s => s.Id == slideId);
 
-            if (slideDb == null) throw new Exception(message: $"Não foi encontrada lâmina com o id {slideId}");
+            if (!exists) throw new Exception(message: $"Não foi encontrada lâmina com o id {slideId}");
 
-            slideDb.Active = false;
-            slideDb.LastModified = DateTime.Now;
+            await _dbContext.Slides
+                .Where(s => s.Id == slideId)
+                .ExecuteUpdateAsync(u => u
+                .SetProperty(x => x.Active, false));
 
-            await _dbContext.SaveChangesAsync();
         }
     }
 }

@@ -71,12 +71,26 @@ namespace histopat_back.Services.ServicesImpl
 
         public async Task DeleteTopic(int topicId)
         {
-            var TopicDb = await _dbContext.Topics.Where(t => t.Id == topicId).FirstOrDefaultAsync();
+            bool exists = await _dbContext.Topics.AnyAsync(t => t.Id == topicId);
 
-            if (TopicDb == null) throw new Exception(message: $"Não foi encontrado tópico com o id {topicId}");
+            if (!exists) throw new Exception(message: $"Não foi encontrado tópico com o id {topicId}");
 
-            TopicDb.Active = false;
-            TopicDb.LastModified = DateTime.Now;
+            await _dbContext.Slides
+                .Where(s => s.SubTopic.IdTopic == topicId)
+                .ExecuteUpdateAsync(u => u
+                .SetProperty(x => x.Active, false));
+
+            await _dbContext.SubTopics
+                .Where(st => st.IdTopic == topicId)
+                .ExecuteUpdateAsync(u => u
+                    .SetProperty(x => x.Active, false)
+                );
+
+            await _dbContext.Topics
+                .Where(t => t.Id == topicId)
+                .ExecuteUpdateAsync(u => u
+                    .SetProperty(x => x.Active, false)
+                );
 
             await _dbContext.SaveChangesAsync();
         }

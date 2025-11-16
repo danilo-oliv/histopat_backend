@@ -73,14 +73,32 @@ namespace histopat_back.Services.ServicesImpl
 
         public async Task DeleteModule(int moduleId)
         {
-            var moduleDb = await _dbContext.Modules.Where(m => m.Id == moduleId).FirstOrDefaultAsync();
+            bool exists = await _dbContext.Modules.AnyAsync(m => m.Id == moduleId);
 
-            if (moduleDb == null) throw new Exception(message: $"Não foi encontrado módulo com o id {moduleId}");
+            if (!exists) throw new Exception(message: $"Não foi encontrado módulo com o id {moduleId}");
 
-            moduleDb.Active = false;
-            moduleDb.LastModified = DateTime.Now;
+            await _dbContext.Slides
+                .Where(s => s.SubTopic.Topic.IdModule == moduleId)
+                .ExecuteUpdateAsync(u => u
+                .SetProperty(x => x.Active, false));
 
-            await _dbContext.SaveChangesAsync();
+            await _dbContext.SubTopics
+                .Where(st => st.Topic.IdModule == moduleId)
+                .ExecuteUpdateAsync(u => u
+                    .SetProperty(x => x.Active, false)
+                );
+
+            await _dbContext.Topics
+                .Where(t => t.IdModule == moduleId)
+                .ExecuteUpdateAsync(u => u
+                    .SetProperty(x => x.Active, false)
+                );
+
+            await _dbContext.Modules
+                .Where(m => m.Id == moduleId)
+                .ExecuteUpdateAsync(u => u
+                    .SetProperty(x => x.Active, false)
+                );
         }
     }
 }

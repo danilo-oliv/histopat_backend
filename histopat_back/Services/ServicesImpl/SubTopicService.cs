@@ -82,14 +82,20 @@ namespace histopat_back.Services.ServicesImpl
 
         public async Task DeleteSubTopic(int subTopicId)
         {
-            var subTopicDb = await _dbContext.SubTopics.Where(st => st.Id == subTopicId).FirstOrDefaultAsync();
+            bool exists = await _dbContext.SubTopics.AnyAsync(st => st.Id == subTopicId);
 
-            if (subTopicDb == null) throw new Exception(message: $"Não foi encontrado subtópico com o id {subTopicId}");
+            if (!exists) throw new Exception(message: $"Não foi encontrado subtópico com o id {subTopicId}");
 
-            subTopicDb.Active = false;
-            subTopicDb.LastModified = DateTime.Now;
+            await _dbContext.Slides
+                .Where(s => s.IdSubTopico == subTopicId)
+                .ExecuteUpdateAsync(u => u
+                .SetProperty(x => x.Active, false));
 
-            await _dbContext.SaveChangesAsync();
+            await _dbContext.SubTopics
+                .Where(st => st.Id == subTopicId)
+                .ExecuteUpdateAsync(u => u
+                    .SetProperty(x => x.Active, false)
+                );
         }
     }
 }
