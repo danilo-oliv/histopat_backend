@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using histopat_back.Context;
 
@@ -11,9 +12,11 @@ using histopat_back.Context;
 namespace histopat_back.Infra.Migrations
 {
     [DbContext(typeof(HistopatDbContext))]
-    partial class HistopatDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251114073218_UserAjuste")]
+    partial class UserAjuste
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -314,11 +317,11 @@ namespace histopat_back.Infra.Migrations
 
             modelBuilder.Entity("histopat_back.Dominio.Models.User.Role", b =>
                 {
-                    b.Property<byte>("IdRole")
+                    b.Property<int>("IdRole")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("tinyint");
+                        .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<byte>("IdRole"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdRole"));
 
                     b.Property<bool>("Active")
                         .HasColumnType("bit");
@@ -359,8 +362,8 @@ namespace histopat_back.Infra.Migrations
                     b.Property<int>("IdUser")
                         .HasColumnType("int");
 
-                    b.Property<byte>("IdRole")
-                        .HasColumnType("tinyint");
+                    b.Property<int>("IdRole")
+                        .HasColumnType("int");
 
                     b.Property<bool>("Active")
                         .HasColumnType("bit");

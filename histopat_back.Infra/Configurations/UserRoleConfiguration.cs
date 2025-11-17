@@ -1,11 +1,6 @@
 ﻿using histopat_back.Dominio.Models.User;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace histopat_back.Infra.Configurations
 {
@@ -15,11 +10,10 @@ namespace histopat_back.Infra.Configurations
         {
             builder.ToTable(nameof(UserRole));
 
-            builder.HasKey(ur => ur.IdUserRole);
+            builder.HasKey(ur => new { ur.IdUser, ur.IdRole });
 
             builder.Property(ur => ur.Active)
                 .IsRequired();
-
         }
     }
 }

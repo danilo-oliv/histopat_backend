@@ -1,11 +1,6 @@
 ﻿using histopat_back.Dominio.Models.User;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace histopat_back.Infra.Configurations
 {
@@ -17,16 +12,21 @@ namespace histopat_back.Infra.Configurations
 
             builder.HasKey(r => r.IdRole);
 
+            builder.Property(r => r.IdRole)
+                .ValueGeneratedOnAdd()
+                .UseIdentityColumn();
+
             builder.Property(r => r.Name)
-                .IsRequired()
-                .HasMaxLength(50);
+                .HasMaxLength(50)
+                .IsRequired();
 
             builder.Property(r => r.Active)
                 .IsRequired();
 
             builder.HasMany(r => r.UserRoles)
                 .WithOne(ur => ur.Role)
-                .HasForeignKey(ur => ur.IdRole);
+                .HasForeignKey(ur => ur.IdRole)
+                .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

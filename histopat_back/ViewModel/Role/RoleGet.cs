@@ -4,6 +4,8 @@
     {
         public byte IdRole { get; set; }
 
-        public string Name { get; set; } = string.Empty;
+        public string Name { get; set; } = null!;
+
+        public bool Active { get; set; }
     }
 }
