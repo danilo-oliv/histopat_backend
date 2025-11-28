@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using histopat_back.Context;
 
@@ -11,9 +12,11 @@ using histopat_back.Context;
 namespace histopat_back.Infra.Migrations
 {
     [DbContext(typeof(HistopatDbContext))]
-    partial class HistopatDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251128162454_AddUserColumns")]
+    partial class AddUserColumns
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -90,7 +93,7 @@ namespace histopat_back.Infra.Migrations
 
                     b.HasIndex("ModuleId");
 
-                    b.ToTable("ModuleHistory", (string)null);
+                    b.ToTable("ModuleHistory");
                 });
 
             modelBuilder.Entity("histopat_back.Dominio.Models.Slide.Slide", b =>
@@ -166,7 +169,7 @@ namespace histopat_back.Infra.Migrations
 
                     b.HasIndex("SlideId");
 
-                    b.ToTable("SlideHistory", (string)null);
+                    b.ToTable("SlideHistory");
                 });
 
             modelBuilder.Entity("histopat_back.Dominio.Models.Subtopic.SubTopicHistory", b =>
@@ -199,7 +202,7 @@ namespace histopat_back.Infra.Migrations
 
                     b.HasIndex("SubtopicId");
 
-                    b.ToTable("SubTopicHistory", (string)null);
+                    b.ToTable("SubTopicHistory");
                 });
 
             modelBuilder.Entity("histopat_back.Dominio.Models.Subtopic.Subtopic", b =>
@@ -309,7 +312,7 @@ namespace histopat_back.Infra.Migrations
 
                     b.HasIndex("TopicId");
 
-                    b.ToTable("TopicHistory", (string)null);
+                    b.ToTable("TopicHistory");
                 });
 
             modelBuilder.Entity("histopat_back.Dominio.Models.User.Role", b =>
