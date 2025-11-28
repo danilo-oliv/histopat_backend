@@ -8,10 +8,15 @@ using histopat_back.Services.Local;
 using histopat_back.Services.Remote;
 using histopat_back.Services.ServicesImpl;
 using Mapster;
+using MapsterMapper;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
+using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
+
+var config = TypeAdapterConfig.GlobalSettings;
+config.Scan(Assembly.GetExecutingAssembly());
 
 builder.Services.AddCors(options =>
 {
@@ -30,13 +35,14 @@ builder.Services.AddControllers().AddJsonOptions(x =>
 
 // Add services to the container.
 builder.Services.AddControllers();
-builder.Services.AddMapster();
+builder.Services.AddScoped<IMapper, ServiceMapper>();
 builder.Services.AddScoped<ISubTopicService, SubTopicService>();
 builder.Services.AddScoped<ITopicService, TopicService>();
 builder.Services.AddScoped<ISlideService, SlideService>();
 builder.Services.AddScoped<IModuleService, ModuleService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IRoleService, RoleService>();
+builder.Services.AddSingleton(config);
 
 builder.Services.Configure<CloudinarySettings>(builder.Configuration.GetSection("CloudinarySettings"));
 

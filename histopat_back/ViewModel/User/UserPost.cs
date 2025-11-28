@@ -10,6 +10,12 @@ namespace histopat_back.ViewModel.User
 
         public bool Active { get; set; } = true;
 
-        public ICollection<byte> Roles { get; set; } = new List<byte>();
+        [Required(ErrorMessage = "Informe o username")]
+        public string UserName { get; set; } = null!;
+
+        [Required(ErrorMessage = "Informe a senha")]
+        public string Password { get; set; } = null!;
+
+        public int? RoleId { get; set; }
     }
 }

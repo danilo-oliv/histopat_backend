@@ -2,7 +2,7 @@ namespace histopat_back.Dominio.Models.User;
 
 public class Role
 {
-    public byte IdRole { get; set; }
+    public int IdRole { get; set; }
 
     public bool Active { get; set; }
 

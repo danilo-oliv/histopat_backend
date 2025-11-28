@@ -9,5 +9,6 @@ namespace histopat_back.Services.Interfaces
         Task SaveUser(UserPost userPost);
         Task EditUser(UserEdit userEdit, int userId);
         Task DeleteUser(int userId);
+        Task<UserGet> Login(UserLogin userLogin);
     }
 }

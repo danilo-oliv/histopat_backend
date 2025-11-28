@@ -53,4 +53,13 @@ public class UserController : ControllerBase
         await _userService.DeleteUser(userId);
         return NoContent();
     }
+
+    [HttpPost("login")]
+    public async Task<IActionResult> Login(UserLogin userLogin)
+    {
+        if (!ModelState.IsValid) return BadRequest(ModelState);
+
+        var user = await _userService.Login(userLogin);
+        return Ok(user);
+    }
 }

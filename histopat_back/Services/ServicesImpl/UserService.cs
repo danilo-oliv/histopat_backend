@@ -45,7 +45,7 @@ namespace histopat_back.Services.ServicesImpl
             return result;
         }
 
-        public async Task<UserGet> FindById(int userId)
+         public async Task<UserGet> FindById(int userId)
         {
             var result = await _dbContext.Users
                 .Where(u => u.IdUser == userId && u.Active)
@@ -74,24 +74,27 @@ namespace histopat_back.Services.ServicesImpl
             return result;
         }
 
+
         public async Task SaveUser(UserPost userPost)
         {
+            // Mapeia o usuário
             var user = _mapper.Map<User>(userPost);
 
             await _dbContext.Users.AddAsync(user);
             await _dbContext.SaveChangesAsync();
 
-            foreach (var roleId in userPost.Roles)
+            // Se o RoleId foi enviado, cria vínculo na tabela UserRole
+            if (userPost.RoleId.HasValue)
             {
                 await _dbContext.UserRoles.AddAsync(new UserRole
                 {
                     IdUser = user.IdUser,
-                    IdRole = roleId,
+                    IdRole = (byte)userPost.RoleId.Value,
                     Active = true
                 });
-            }
 
-            await _dbContext.SaveChangesAsync();
+                await _dbContext.SaveChangesAsync();
+            }
         }
 
         public async Task EditUser(UserEdit userEdit, int userId)
@@ -135,6 +138,21 @@ namespace histopat_back.Services.ServicesImpl
             userDb.Active = false;
 
             await _dbContext.SaveChangesAsync();
+        }
+
+        public async Task<UserGet> Login(UserLogin userLogin)
+        {
+            var user = await _dbContext.Users
+                .Include(u => u.UserRoles)
+                .FirstOrDefaultAsync(u => u.UserName == userLogin.UserName && u.Active);
+
+            if (user == null)
+                throw new Exception("Usuário ou senha incorretos");
+
+            if (user.Password != userLogin.Password)
+                throw new Exception("Usuário ou senha incorretos");
+
+            return _mapper.Map<UserGet>(user);
         }
     }
 }
